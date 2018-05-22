@@ -67,10 +67,24 @@ def draw():
     global pagenumber
     background(91,94,125)
     
-    if pagenumber == 0: # Set Up Home Page
-        OpenSans = loadFont("OpenSans-Extrabold-48.vlw")
+    def instructp(title,instructiontext): # Create instruction page
+        OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
         fill(255)
-        textFont(OpenSans,50)
+        textFont(OpenSansBold,50)
+        textAlign(CENTER)
+        text(title,350,75)
+        gamestart.create()
+        viewboard.create()
+        returnmenu.create()
+        OpenSansRegular = loadFont("OpenSans-48.vlw")
+        textFont(OpenSansRegular,24)
+        textAlign(CENTER)
+        text(instructiontext,350,115)
+    
+    if pagenumber == 0: # Set Up Home Page
+        OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
+        fill(255)
+        textFont(OpenSansBold,50)
         textAlign(CENTER)
         text("Math Games!",350,75)
         chasing.create()
@@ -81,14 +95,23 @@ def draw():
         game6.create()
         
     if pagenumber == 1: # Set Up Chase the Numbers Page
-        OpenSans = loadFont("OpenSans-Extrabold-48.vlw")
-        fill(255)
-        textFont(OpenSans,50)
-        textAlign(CENTER)
-        text("Chase the Numbers",350,75)
-        gamestart.create()
-        viewboard.create()
-        returnmenu.create()
+        instructp("Chase The Numbers","INSTRUCTIONS:\n"
+                  "- You will be asked to find the lowest or highest number in\na set of 10 numbers and destory it.\n"
+                  "- You EARN 1 point for every number destroyed.\n"
+                  "- Select the wrong number and LOSE 2 points.\n"
+                  "- Clear the board as fast as possible to be presented with\n another set of 10 numbers.\n"
+                  "- Beware! You only have 60 seconds to earn as many points \nas possible.\n"
+                  "- Watch for GREEN blocks to add time to the clock.")
+    
+    if pagenumber == 2: # Set Up Divisor Snake
+        instructp("Divisor Snake","INSTRUCTIONS:\n"
+                  "- Your job is to guide a snake around the game board with\nyour keyboard arrows while keeping it well fed.\n"
+                  "- The snake eats divisors for a specific number that will\nchange after each time it eats.\n"
+                  "- Be quick! The food may expire and disappear at any time.\n"
+                  "- Should you try to feed it a number that isn't a divisor for\nthe specific number you will be given a STRIKE.\n"
+                  "- Get 3 STRIKES and your snake dies!\n"
+                  "- You have 120 seconds to eat as many divisors as possible." )
+    
             
 def mouseClicked():
     global pagenumber
@@ -104,3 +127,11 @@ def mouseClicked():
             pagenumber = 13
         if returnmenu.press() == True:
             pagenumber = 0
+    if pagenumber == 2: # Divisor Instruction Buttons
+        if gamestart.press() == True:
+            pagenumber = 8
+        if viewboard.press() == True:
+            pagenumber = 13
+        if returnmenu.press() == True:
+            pagenumber = 0        
+    
