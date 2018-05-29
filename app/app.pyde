@@ -106,7 +106,7 @@ class NumberBubble():
                 
         print(self.posX)
 
-        
+      
     def display(self):
         self.game = 0
         i = 0            
@@ -178,7 +178,58 @@ class NumberBubble():
             if exitgame.press() == True:
                 global pagenumber
                 pagenumber = 0
+class Snake():
+    def __init__(self):
+        self.gen_food()
+        self.score = 0
+        self.game = 0
 
+    def gen_food(self):
+        self.posX = [random.randint(25,670)]
+        self.posY = [random.randint(75,400)]
+        p = 1
+        while p != 5:
+            x = random.randint(25,670)
+            y = random.randint(75,400)
+            check = False
+            for l in self.posX:
+                for j in self.posY:
+                    if x in range(l-51,l+51) and y in range(j-37,j+37):
+                        check = True
+                        break
+                if check == True:
+                    break
+            if check == False:
+                self.posX.append(x)
+                self.posY.append(y)
+                p += 1
+        
+        self.number_list = [random.randint(1,99)]
+        n = 1
+        while n != 5:
+            num = random.randint(1,99)
+            check = False
+            for t in self.number_list:
+                if num == t:
+                    check = True
+                
+                if check == False:
+                    self.number_list.append(num)
+                    n += 1
+    def display(self):
+        self.game = 0
+        i = 0
+    
+        
+        while i < len(self.posX):
+            fill(211,111,95)
+            rect(self.posX[i],self.posY[i],25,25)
+            OpenSansBold = loadFont("OpenSans-Bold-48.vlw")  
+            fill(0)
+            textFont(OpenSansBold,20)
+            textAlign(CENTER)
+            text(self.number_list[i],self.posX[i],self.posY[i])
+            i += 1
 class Timer():
     def __init__(self,sec):
         self.sec = sec
@@ -207,14 +258,20 @@ class Timer():
             
             
 gamebubble = NumberBubble()
+gamesnake = Snake()
 chasetimer = Timer(60)
+snaketimer = Timer(120)
 
 def startup():
     global gamebubble
     gamebubble = NumberBubble()
+    global gamesnake
+    gamesnake = Snake()
     global chasetimer
     chasetimer = Timer(60)
-
+    global snaketimer
+    snaketimer = Timer(120)
+    
 def setup():
     size(700,500)
     background(91,94,125)
@@ -282,7 +339,16 @@ def draw():
         else:
             gamebubble.gameover()
     
+    if pagenumber == 8:# Snake game
+        
+        if snaketimer.timecheck() == True:
+            #gamesnake.display()
+            snaketimer.update()
             
+       # else:
+           # gamesnake.gameover()    
+    
+    
 def mouseClicked():
     global pagenumber
     if pagenumber == 0: # Home Page Buttons
