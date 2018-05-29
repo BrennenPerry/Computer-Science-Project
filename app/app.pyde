@@ -14,6 +14,7 @@
 # Page 13 = Scoreboard Page
 import random
 pagenumber = 0
+resetgame = 0
 
 class Button():
     def __init__(self,xPos,yPos,buttonsize,buttontext):
@@ -67,7 +68,6 @@ class NumberBubble():
     def __init__(self):
         self.gen_bubble()
         self.score = 0
-        self.sec = 900
         self.game = 0
                 
     def gen_bubble(self):
@@ -103,54 +103,51 @@ class NumberBubble():
             if check == False:
                 self.number_list.append(num)
                 n += 1
+                
+        print(self.posX)
+
         
     def display(self):
-        if self.sec > 0:
-            self.game = 0
-            i = 0
-            OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
+        self.game = 0
+        i = 0            
+        OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
+        fill(255)
+        textFont(OpenSansExtraBold,35)
+        textAlign(CENTER)
+        if self.lowhigh == 1:
+            text("Select the LOWEST Number",350,50)
+        if self.lowhigh == 2:
+            text("Select the HIGHEST Number",350,50)
+        while i < len(self.posX):
             fill(255)
-            textFont(OpenSansExtraBold,35)
+            ellipse(self.posX[i],self.posY[i],50,36)                
+            OpenSansBold = loadFont("OpenSans-Bold-48.vlw")
+            fill(0)
+            textFont(OpenSansBold,20)
             textAlign(CENTER)
-            if self.lowhigh == 1:
-                text("Select the LOWEST Number",350,50)
-            if self.lowhigh == 2:
-                text("Select the HIGHEST Number",350,50)
-            while i < len(self.posX):
-                fill(255)
-                ellipse(self.posX[i],self.posY[i],50,36)
-                OpenSansBold = loadFont("OpenSans-Bold-48.vlw")
-                fill(0)
-                textFont(OpenSansBold,20)
-                textAlign(CENTER)
-                text(self.number_list[i],self.posX[i],self.posY[i]+8)
-                i += 1
-            
-            OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
-            fill(255)
-            textFont(OpenSansExtraBold,25)
-            textAlign(CENTER)
-            scoretext = "Score: "+str(self.score)
-            text(scoretext,100,450)
+            text(self.number_list[i],self.posX[i],self.posY[i]+8)
+            i += 1
+    
+        OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
+        fill(255)
+        textFont(OpenSansExtraBold,25)
+        textAlign(CENTER)
+        scoretext = "Score: "+str(self.score)
+        text(scoretext,100,450)
         
-            import time
-            textFont(OpenSansExtraBold,35)
-            textAlign(CENTER)
-            timetext = "Time Left: "+str(self.sec/15)
-            text(timetext,550,475)
-            self.sec -= 1
-        
-        else:
-            self.game = 1
-            self.posX = []
-            self.posY = []
-            self.number_list = []
-            OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
-            fill(255)
-            textFont(OpenSansExtraBold,50)
-            textAlign(CENTER)
-            text("Game Over!",350,250)
-            exitgame.create()
+    def gameover(self):
+        self.game = 1
+        self.posX = []
+        self.posY = []
+        self.number_list = []
+        OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
+        fill(255)
+        textFont(OpenSansExtraBold,50)
+        textAlign(CENTER)
+        text("Game Over!",350,250)
+        global resetgame
+        resetgame = 1
+        exitgame.create()
             
     def remove_bubble(self,index):
         self.posX.remove(self.posX[index])
@@ -181,13 +178,42 @@ class NumberBubble():
             if exitgame.press() == True:
                 global pagenumber
                 pagenumber = 0
+
+class Timer():
+    def __init__(self,sec):
+        self.sec = sec
+        self.starttimer = millis()
+        
+    def update(self):
+        OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
+        fill(255)
+        textFont(OpenSansExtraBold,35)
+        textAlign(CENTER)
+        timetext = "Time Left: "+str(self.sec)
+        text(timetext,550,475)
+        
+        timedif = millis() - self.starttimer
+        
+        if timedif >= 1000:
+            self.sec -= 1
+            self.starttimer = millis()
+    
+        
+    def timecheck(self):
+        if self.sec >= 0:
+            return True
+        else:
+            return False
             
             
 gamebubble = NumberBubble()
+chasetimer = Timer(60)
 
 def startup():
     global gamebubble
     gamebubble = NumberBubble()
+    global chasetimer
+    chasetimer = Timer(60)
 
 def setup():
     size(700,500)
@@ -212,7 +238,11 @@ def draw():
         text(instructiontext,350,115)
     
     if pagenumber == 0: # Set Up Home Page
-        startup()
+        global resetgame
+        if resetgame == 1:
+            startup()
+            resetgame = 0
+            timerset = 0
         OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
         fill(255)
         textFont(OpenSansBold,50)
@@ -244,7 +274,13 @@ def draw():
                   "- You have 120 seconds to eat as many divisors as possible." )
         
     if pagenumber == 7: # Chase the Number Game Screen
-        gamebubble.display()
+        
+        if chasetimer.timecheck() == True:
+            gamebubble.display()
+            chasetimer.update()
+            
+        else:
+            gamebubble.gameover()
     
             
 def mouseClicked():
@@ -269,5 +305,7 @@ def mouseClicked():
         if returnmenu.press() == True:
             pagenumber = 0
     if pagenumber == 7:
-        gamebubble.press()        
+        gamebubble.press()
+        
+               
     
