@@ -179,6 +179,7 @@ class NumberBubble():
                 global pagenumber
                 pagenumber = 0
 class Snake():
+    
     def __init__(self):
         self.gen_food()
         self.score = 0
@@ -213,14 +214,13 @@ class Snake():
                 if num == t:
                     check = True
                 
-                if check == False:
-                    self.number_list.append(num)
-                    n += 1
+            if check == False:
+                self.number_list.append(num)
+                n += 1
+        print (self.posX)
     def display(self):
         self.game = 0
         i = 0
-    
-        
         while i < len(self.posX):
             fill(211,111,95)
             rect(self.posX[i],self.posY[i],25,25)
@@ -230,6 +230,7 @@ class Snake():
             textAlign(CENTER)
             text(self.number_list[i],self.posX[i],self.posY[i])
             i += 1
+
 class Timer():
     def __init__(self,sec):
         self.sec = sec
@@ -342,11 +343,11 @@ def draw():
     if pagenumber == 8:# Snake game
         
         if snaketimer.timecheck() == True:
-            #gamesnake.display()
+            gamesnake.display()
             snaketimer.update()
             
-       # else:
-           # gamesnake.gameover()    
+        #else:
+           #gamesnake.gameover()
     
     
 def mouseClicked():
