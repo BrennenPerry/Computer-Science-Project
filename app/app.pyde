@@ -182,6 +182,7 @@ class Snake():
     
     def __init__(self):
         self.gen_food()
+        self.create_snake()
         self.score = 0
         self.game = 0
 
@@ -218,6 +219,17 @@ class Snake():
                 self.number_list.append(num)
                 n += 1
         print (self.posX)
+        
+    def create_snake(self):
+        self.snakeX = [random.randint(25,670)]
+        self.snakeY = [random.randint(75,400)]
+        s = 0
+        while s != 5:
+            self.snakeX.append(self.snakeX[s])
+            self.snakeY.append(self.snakeY[s]-35)
+            s += 1
+            
+        
     def display(self):
         self.game = 0
         i = 0
@@ -226,11 +238,19 @@ class Snake():
             rect(self.posX[i],self.posY[i],25,25)
             OpenSansBold = loadFont("OpenSans-Bold-48.vlw")  
             fill(0)
-            textFont(OpenSansBold,20)
+            textFont(OpenSansBold,15)
             textAlign(CENTER)
-            text(self.number_list[i],self.posX[i],self.posY[i])
+            text(self.number_list[i],self.posX[i]+13.75,self.posY[i]+18.75)
             i += 1
-
+            
+        w = 0
+        while w < len(self.snakeY):
+             
+            fill(0,196,4)
+            rect(self.snakeX[w],self.snakeY[w],35,35)
+            w += 1
+        
+    
 class Timer():
     def __init__(self,sec):
         self.sec = sec
