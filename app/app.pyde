@@ -103,8 +103,6 @@ class NumberBubble():
             if check == False:
                 self.number_list.append(num)
                 n += 1
-                
-        print(self.posX)
 
       
     def display(self):
@@ -185,6 +183,7 @@ class Snake():
         self.create_snake()
         self.score = 0
         self.game = 0
+        self.dir = [1,1]
 
     def gen_food(self):
         self.posX = [random.randint(25,670)]
@@ -218,15 +217,19 @@ class Snake():
             if check == False:
                 self.number_list.append(num)
                 n += 1
-        print (self.posX)
         
     def create_snake(self):
         self.snakeX = [random.randint(25,670)]
-        self.snakeY = [random.randint(75,400)]
+        self.snakeY = [random.randint(75,225)]
+        
+        for l in self.posX:
+            while self.snakeX[0] in range(l-50,l+50):
+                self.snakeX = [random.randint(25,670)]
+            
         s = 0
         while s != 5:
             self.snakeX.append(self.snakeX[s])
-            self.snakeY.append(self.snakeY[s]-35)
+            self.snakeY.append(self.snakeY[s]+35)
             s += 1
             
         
@@ -245,12 +248,114 @@ class Snake():
             
         w = 0
         while w < len(self.snakeY):
-             
             fill(0,196,4)
-            rect(self.snakeX[w],self.snakeY[w],35,35)
+            ellipse(self.snakeX[w],self.snakeY[w],35,35)
             w += 1
         
+        
+        fill(255,144,231)
+        if self.dir[1] == 1:
+            rect(self.snakeX[0]-5,self.snakeY[0]-37,10,20)
+            fill(0)
+            ellipse(self.snakeX[0]-7,self.snakeY[0]-5,6,6)
+            ellipse(self.snakeX[0]+7,self.snakeY[0]-5,6,6)
+        if self.dir[1] == 2:
+            rect(self.snakeX[0]-5,self.snakeY[0]+16,10,20)
+            fill(0)
+            ellipse(self.snakeX[0]-7,self.snakeY[0]+5,6,6)
+            ellipse(self.snakeX[0]+7,self.snakeY[0]+5,6,6)
+        if self.dir[1] == 3:
+            rect(self.snakeX[0]-37,self.snakeY[0]-5,20,10)
+            fill(0)
+            ellipse(self.snakeX[0]-5,self.snakeY[0]-7,6,6)
+            ellipse(self.snakeX[0]-5,self.snakeY[0]+7,6,6)
+        if self.dir[1] == 4:
+            rect(self.snakeX[0]+16,self.snakeY[0]-5,20,10)
+            fill(0)
+            ellipse(self.snakeX[0]+5,self.snakeY[0]-7,6,6)
+            ellipse(self.snakeX[0]+5,self.snakeY[0]+7,6,6)
+        self.direction()
+        
+    def direction(self):
+        def up(index):
+            self.snakeY[index] = self.snakeY[index]-1
+        def down(index):
+            self.snakeY[index] = self.snakeY[index]+1
+        def west(index):
+            self.snakeX[index] = self.snakeX[index]-1
+        def east(index):
+            self.snakeX[index] = self.snakeX[index]+1
+        
+        
+        if self.dir[0] == 1:
+            i = 0
+            while i != 6:
+                if self.dir[1] == 3 and self.snakeY[i] <= self.posCurve:
+                    west(i)
+                    i += 1
+                elif self.dir[1] == 4 and self.snakeY[i] <= self.posCurve:
+                    east(i)
+                    i += 1
+                else:
+                    up(i)
+                    i += 1
+                    
+        if self.dir[0] == 2:
+            i = 0
+            while i != 6:
+                if self.dir[1] == 3 and self.snakeY[i] >= self.posCurve:
+                    west(i)
+                    i += 1
+                elif self.dir[1] == 4 and self.snakeY[i] >= self.posCurve:
+                    east(i)
+                    i += 1
+                else:
+                    down(i)
+                    i += 1
+                    
+        if self.dir[0] == 3:
+            i = 0
+            while i != 6:
+                if self.dir[1] == 1 and self.snakeX[i] <= self.posCurve:
+                    up(i)
+                    i += 1
+                elif self.dir[1] == 2 and self.snakeX[i] <= self.posCurve:
+                    down(i)
+                    i += 1
+                else:
+                    west(i)
+                    i += 1
+                    
+        if self.dir[0] == 4:
+            i = 0
+            while i != 6:
+                if self.dir[1] == 1 and self.snakeX[i] >= self.posCurve:
+                    up(i)
+                    i += 1
+                elif self.dir[1] == 2 and self.snakeX[i] >= self.posCurve:
+                    down(i)
+                    i += 1
+                else:
+                    east(i)
+                    i += 1
+                    
+        
     
+            
+    def change_dir(self,keypress):
+        if keypress == "UP" and self.dir[1] != 2:
+            self.dir = [self.dir[1],1]
+            self.posCurve = self.snakeX[0]
+        if keypress == "DOWN" and self.dir[1] != 1:
+            self.dir = [self.dir[1],2]
+            self.posCurve = self.snakeX[0]
+        if keypress == "WEST" and self.dir[1] != 4:
+            self.dir = [self.dir[1],3]
+            self.posCurve = self.snakeY[0]
+        if keypress == "EAST" and self.dir[1] != 3:
+            self.dir = [self.dir[1],4]
+            self.posCurve = self.snakeY[0]
+            
 class Timer():
     def __init__(self,sec):
         self.sec = sec
@@ -393,6 +498,19 @@ def mouseClicked():
             pagenumber = 0
     if pagenumber == 7:
         gamebubble.press()
+        
+def keyPressed():
+    if pagenumber == 8:
+        if key == CODED:
+            if keyCode == UP:
+                gamesnake.change_dir("UP")
+            if keyCode == DOWN:
+                gamesnake.change_dir("DOWN")
+            if keyCode == LEFT:
+                gamesnake.change_dir("WEST")
+            if keyCode == RIGHT:
+                gamesnake.change_dir("EAST")
+                
         
                
     
