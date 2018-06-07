@@ -60,8 +60,14 @@ gamestart = Button(25,425,'Large','Start Game')
 viewboard = Button(425,425,'Large','View Scoreboard')
 returnmenu = Button(288,425,'Small','Menu')
 ### END - INSTRUCTION PAGE ##
-
+### START - NUMBER DETECTIVE PAGE ###
+easybutton = Button(75,350,'Small','3 Digit')
+medbutton = Button(275,350,'Small','4 Digit')
+hardbutton = Button(475,350,'Small','5 Digit')
+newmenu = Button(50,425,'Large','Menu')
+newviewboard = Button(400,425,'Large','View Scoreboard')
 exitgame = Button(25,425,'Large','Exit Game')
+
 
 class NumberBubble():
 
@@ -205,7 +211,6 @@ class Timer():
             
             
 gamebubble = NumberBubble()
-gamesnake = Snake()
 chasetimer = Timer(60)
 snaketimer = Timer(120)
 
@@ -269,13 +274,24 @@ def draw():
                   "- Watch for GREEN blocks to add time to the clock.")
     
     if pagenumber == 2: # Set Up Divisor Snake
-        instructp("Divisor Snake","INSTRUCTIONS:\n"
-                  "- Your job is to guide a snake around the game board with\nyour keyboard arrows while keeping it well fed.\n"
-                  "- The snake eats divisors for a specific number that will\nchange after each time it eats.\n"
-                  "- Be quick! The food may expire and disappear at any time.\n"
-                  "- Should you try to feed it a number that isn't a divisor for\nthe specific number you will be given a STRIKE.\n"
-                  "- Get 3 STRIKES and your snake dies!\n"
-                  "- You have 120 seconds to eat as many divisors as possible." )
+        OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
+        fill(255)
+        textFont(OpenSansBold,50)
+        textAlign(CENTER)
+        text("Number Detective",350,75)
+        easybutton.create()
+        medbutton.create()
+        hardbutton.create()
+        newviewboard.create()
+        newmenu.create()
+        OpenSansRegular = loadFont("OpenSans-48.vlw")
+        textFont(OpenSansRegular,24)
+        textAlign(CENTER)
+        text("INSTRUCTIONS:\n"
+                  "- You've been given the job of cracking a secret code in the\nleast amount of tries.\n"
+                  "- Once you make a guess of what the secret code is you'll be\ntold whether it's too high or too low.\n"
+                  "- You'll also be told how many digits in the code you got\ncorrect, but won't know the positions.\n"
+                  "Select your difficulty:",350,115)
         
     if pagenumber == 7: # Chase the Number Game Screen
         
@@ -285,17 +301,7 @@ def draw():
             
         else:
             gamebubble.gameover()
-    
-    if pagenumber == 8:# Snake game
-        
-        if snaketimer.timecheck() == True:
-            gamesnake.display()
-            snaketimer.update()
-            
-        #else:
-           #gamesnake.gameover()
-    
-    
+
 def mouseClicked():
     global pagenumber
     if pagenumber == 0: # Home Page Buttons
@@ -310,12 +316,19 @@ def mouseClicked():
             pagenumber = 13
         if returnmenu.press() == True:
             pagenumber = 0
-    if pagenumber == 2: # Divisor Instruction Buttons
-        if gamestart.press() == True:
+    if pagenumber == 2: # Number Detective Instruction Buttons
+        if easybutton.press() == True:
             pagenumber = 8
-        if viewboard.press() == True:
+            dif = 1
+        if medbutton.press() == True:
+            pagenumber = 8
+            dif = 2
+        if hardbutton.press() == True:
+            pagenumber = 8
+            dif = 3
+        if newviewboard.press() == True:
             pagenumber = 13
-        if returnmenu.press() == True:
+        if newmenu.press() == True:
             pagenumber = 0
     if pagenumber == 7:
         gamebubble.press()
