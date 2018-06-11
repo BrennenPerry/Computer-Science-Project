@@ -13,6 +13,7 @@ import random
 pagenumber = 0
 resetgame = 0
 t = 0
+o = 0
 
 class Button():
     def __init__(self,xPos,yPos,buttonsize,buttontext):
@@ -216,7 +217,11 @@ class NumberBubble():
                 scoresub = 1
                 global gamename
                 gamename = "Chase the Number"
-            
+
+       
+                
+                
+                
 class Timer():
     def __init__(self,sec):
         self.sec = sec
@@ -343,7 +348,32 @@ def draw():
             global gamescore
             gamescore = gamebubble.gameover()
             
+    if pagenumber == 6: #Number Detective Screen
+        OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
+        fill(255)
+        textFont(OpenSansBold,30)
+        textAlign(CENTER)
+        if dif == 1:
+            text("Crack the code! You need to guess\nwhat the 3 digits of the code are...",350,50)
+        if dif == 2:
+            text("Crack the code! You need to guess\nwhat the 4 digits of the code are...",350,50)
+        if dif == 3:
+            text("Crack the code! You need to guess\nwhat the 5 digits of the code are...",350,50)
+        textFont(OpenSansBold,20)
+        text("Enter your guess:",140,285)
+        global o
+        if o == 0:
+                font = createFont("OpenSansBold", 20)
+                global cp5
+                cp5 = ControlP5(this)
+                cp5.addTextfield("").setPosition(250,250).setSize(
+                275,60).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
+                o = 1
+        submit.create()
+                
+            
     if pagenumber == 9: #Scoreboard Screen
+        
         OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
         fill(255)
         textFont(OpenSansBold,40)
@@ -408,7 +438,7 @@ def mouseClicked():
         if viewboard.press() == True:
             pagenumber = 9
             global gamename
-            gamename = "Divisor Snake"
+            gamename = "Chase the Number"
             global scoresub
             scoresub = 3
         if returnmenu.press() == True:
@@ -416,19 +446,34 @@ def mouseClicked():
     if pagenumber == 2: # Number Detective Instruction Buttons
         if easybutton.press() == True:
             pagenumber = 6
+            global dif
+            global digit
             dif = 1
+            digit = random.randint(100,999)
         if medbutton.press() == True:
             pagenumber = 6
+            global dif
+            global digit
             dif = 2
+            digit = random.randint(1000,9999)
         if hardbutton.press() == True:
             pagenumber = 6
+            global dif
+            global digit
             dif = 3
+            digit = random.randint(10000,99999)
         if newviewboard.press() == True:
             pagenumber = 9
         if newmenu.press() == True:
-            pagenumber = 0    
+            pagenumber = 0 
+    
     if pagenumber == 5:
         gamebubble.press()
+        
+    if pagenumber == 6:
+        if submit.press() == True and digit != int(cp5.get(Textfield, "").getText()):
+            print(digit)
+            
     if pagenumber == 9:
         if scoresub == 1 and submit.press() == True and cp5.get(Textfield, "").getText() != "":
             global scoresub
