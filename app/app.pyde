@@ -1,20 +1,18 @@
+add_library('controlP5')
 # Page 0 = Menu Page
 # Page 1 = Chase the Number Instruction Page
-# Page 2 = Divisor Snake Instruction Page
+# Page 2 = Number Detective Instruction Page
 # Page 3 = Game 3 Instruction Page
 # Page 4 = Game 4 Instruction Page
-# Page 5 = Game 5 Instruction Page
-# Page 6 = Game 6 Instruction Page
-# Page 7 Chase the Number Game Page
-# Page 8 =  Game Page
-# Page 9 = Game 3 Game Page
-# Page 10 = Game 4 Game Page
-# Page 11 = Game 5 Game Page
-# Page 12 = Game 6 Game Page
-# Page 13 = Scoreboard Page
+# Page 5 = Chase the Number Game Page
+# Page 6 = Number Detective Game Page
+# Page 7 = Game 3 Game Page
+# Page 8 = Game 4 Game Page
+# Page 9 = Scoreboard Page
 import random
 pagenumber = 0
 resetgame = 0
+t = 0
 
 class Button():
     def __init__(self,xPos,yPos,buttonsize,buttontext):
@@ -46,13 +44,12 @@ class Button():
         else:
             return False
 
+
 ### START - HOME PAGE ###
 chasing = Button(50,150,'Large','Chase The Numbers')
-divisor = Button(400,150,'Large','Divisor Snake') 
+number = Button(400,150,'Large','Number Detective') 
 game3 = Button(50,250,'Large','Game 3')
 game4 = Button(400,250,'Large','Game 4')
-game5 = Button(50,350,'Large','Game 5')
-game6 = Button(400,350,'Large','Game 6')
 ### END - HOME PAGE ##
 
 ### START - INSTRUCTION PAGE ###
@@ -60,13 +57,19 @@ gamestart = Button(25,425,'Large','Start Game')
 viewboard = Button(425,425,'Large','View Scoreboard')
 returnmenu = Button(288,425,'Small','Menu')
 ### END - INSTRUCTION PAGE ##
+
+exitgame = Button(25,425,'Large','Exit Game')
+savescore = Button(425,425,'Large','Save Score')
+
 ### START - NUMBER DETECTIVE PAGE ###
 easybutton = Button(75,350,'Small','3 Digit')
 medbutton = Button(275,350,'Small','4 Digit')
 hardbutton = Button(475,350,'Small','5 Digit')
 newmenu = Button(50,425,'Large','Menu')
 newviewboard = Button(400,425,'Large','View Scoreboard')
-exitgame = Button(25,425,'Large','Exit Game')
+### END - NUMBER DETECTIVE PAGE ###
+
+submit = Button(550,250,'Small','Submit')
 
 
 class NumberBubble():
@@ -152,6 +155,8 @@ class NumberBubble():
         global resetgame
         resetgame = 1
         exitgame.create()
+        savescore.create()
+        return int(self.score)
             
     def remove_bubble(self,index):
         self.posX.remove(self.posX[index])
@@ -160,6 +165,7 @@ class NumberBubble():
 
             
     def press(self):
+        OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
         if self.game == 0:
             i = 0
             if self.lowhigh == 1:
@@ -168,20 +174,42 @@ class NumberBubble():
                 numbertarget = max(self.number_list)
             while i < len(self.posX):
                 if len(self.posX) == 1:
+                    fill(0,255,0)
+                    textFont(OpenSansExtraBold,25)
+                    textAlign(CENTER)
+                    text("+1",100,425)
                     self.gen_bubble()
                     self.score += 1
                     break
                 if mouseX in range(self.posX[i]-25,self.posX[i]+25):
                     if mouseY in range(self.posY[i]-18,self.posY[i]+18):
                         if numbertarget == self.number_list[i]:
+                            fill(0,255,0)
+                            textFont(OpenSansExtraBold,25)
+                            textAlign(CENTER)
+                            text("+1",100,425)
                             self.remove_bubble(i)
                             self.score += 1
                             self.lowhigh = random.randint(1,2)
+                        else:
+                            fill(124,10,2)
+                            textFont(OpenSansExtraBold,25)
+                            textAlign(CENTER)
+                            text("-2",100,425)
+                            self.score -= 2
+                            
                 i += 1
         if self.game == 1:
             if exitgame.press() == True:
                 global pagenumber
                 pagenumber = 0
+            if savescore.press() == True:
+                global pagenumber
+                pagenumber = 9
+                global scoresub
+                scoresub = 1
+                global gamename
+                gamename = "Divisor Snake"
             
 class Timer():
     def __init__(self,sec):
@@ -211,22 +239,30 @@ class Timer():
             
             
 gamebubble = NumberBubble()
-chasetimer = Timer(60)
-snaketimer = Timer(120)
+chasetimer = Timer(10)
 
 def startup():
     global gamebubble
     gamebubble = NumberBubble()
-    global gamesnake
-    gamesnake = Snake()
     global chasetimer
     chasetimer = Timer(60)
-    global snaketimer
-    snaketimer = Timer(120)
     
 def setup():
     size(700,500)
     background(91,94,125)
+    
+    ### DOWNLOAD SCORES##
+    with open ("divisorscore.txt") as divisor_score:
+        i = 0
+        global divisor_namelist
+        divisor_namelist = []
+        global divisor_scorelist
+        divisor_scorelist = []
+        lines = [x.replace('\n', '') for x in divisor_score.readlines()]
+        while i != len(lines):
+            divisor_namelist.append(lines[i])
+            divisor_scorelist.append(lines[i+1])
+            i += 2
     
 def draw():
     global pagenumber
@@ -258,11 +294,9 @@ def draw():
         textAlign(CENTER)
         text("Math Games!",350,75)
         chasing.create()
-        divisor.create()
+        number.create()
         game3.create()
         game4.create()
-        game5.create()
-        game6.create()
         
     if pagenumber == 1: # Set Up Chase the Numbers Page
         instructp("Chase The Numbers","INSTRUCTIONS:\n"
@@ -293,58 +327,125 @@ def draw():
                   "- You'll also be told how many digits in the code you got\ncorrect, but won't know the positions.\n"
                   "Select your difficulty:",350,115)
         
-    if pagenumber == 7: # Chase the Number Game Screen
+    if pagenumber == 5: # Chase the Number Game Screen
         
         if chasetimer.timecheck() == True:
             gamebubble.display()
             chasetimer.update()
             
         else:
-            gamebubble.gameover()
+            global gamescore
+            gamescore = gamebubble.gameover()
+            
+    if pagenumber == 9: #Scoreboard Screen
+        OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
+        fill(255)
+        textFont(OpenSansBold,40)
+        textAlign(CENTER)
+        
+        if scoresub == 1:
+            text("Score Submission",350,50)
+            textFont(OpenSansBold,30)
+            scoretxt = "Your Score: "+str(gamescore)
+            text(scoretxt,350,200)
+            textFont(OpenSansBold,25)
+            text("Name:",100,290)
+            global t
+            if t == 0:
+                font = createFont("OpenSansBold", 20)
+                global cp5
+                cp5 = ControlP5(this)
+                cp5.addTextfield("").setPosition(175,250).setSize(
+                350,60).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False)
+                t = 1
+            submit.create()
+            
+        if scoresub == 2:
+            cp5.get("").hide()
+            OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
+            fill(255)
+            textFont(OpenSansBold,40)
+            textAlign(CENTER)
+            text("Score Submitted!",350,410)
+            
+        if scoresub == 2 or scoresub == 3:
+            headline = "Scoreboard - "+gamename
+            text(headline,350,50)
+            fill(255,0,0,0)
+            strokeWeight(3)
+            rect(10,65,680,300)
+            scoreboard_text = ""
+            if gamename == "Divisor Snake":
+                i = 0
+                while i < len(divisor_namelist) and i < 5:
+                        scoreboard_text += "\n"+divisor_namelist[i]+" - "+"Score: "+divisor_scorelist[i]+"\n"
+                        i += 1
+                fill(255)
+                OpenSansRegular = loadFont("OpenSans-48.vlw")
+                textFont(OpenSansRegular,24)
+                textAlign(CENTER)
+                text(scoreboard_text,350,70)
+            strokeWeight(1)
+            returnmenu.create()
+                
 
 def mouseClicked():
     global pagenumber
     if pagenumber == 0: # Home Page Buttons
         if chasing.press() == True:
             pagenumber = 1
-        if divisor.press() == True:
+        if number.press() == True:
             pagenumber = 2
     if pagenumber == 1: # Chase the Numbers Instruction Buttons
         if gamestart.press() == True:
-            pagenumber = 7
+            pagenumber = 5
         if viewboard.press() == True:
-            pagenumber = 13
+            pagenumber = 9
+            global gamename
+            gamename = "Divisor Snake"
+            global scoresub
+            scoresub = 3
         if returnmenu.press() == True:
             pagenumber = 0
     if pagenumber == 2: # Number Detective Instruction Buttons
         if easybutton.press() == True:
-            pagenumber = 8
+            pagenumber = 6
             dif = 1
         if medbutton.press() == True:
-            pagenumber = 8
+            pagenumber = 6
             dif = 2
         if hardbutton.press() == True:
-            pagenumber = 8
+            pagenumber = 6
             dif = 3
         if newviewboard.press() == True:
-            pagenumber = 13
+            pagenumber = 9
         if newmenu.press() == True:
-            pagenumber = 0
-    if pagenumber == 7:
+            pagenumber = 0    
+    if pagenumber == 5:
         gamebubble.press()
-        
-def keyPressed():
-    if pagenumber == 8:
-        if key == CODED:
-            if keyCode == UP:
-                gamesnake.change_dir("UP")
-            if keyCode == DOWN:
-                gamesnake.change_dir("DOWN")
-            if keyCode == LEFT:
-                gamesnake.change_dir("WEST")
-            if keyCode == RIGHT:
-                gamesnake.change_dir("EAST")
-                
-        
-               
-    
+    if pagenumber == 9:
+        if scoresub == 1 and submit.press() == True and cp5.get(Textfield, "").getText() != "":
+            global scoresub
+            scoresub = 2
+            global t
+            t = 0
+            global divisor_namelist
+            divisor_namelist.append(str(cp5.get(Textfield, "").getText()))
+            global divisor_scorelist
+            divisor_scorelist.append(str(gamescore))
+            sortedscore = sorted(divisor_scorelist, reverse= True)
+            new_namelist = []
+            for s in sortedscore:
+                indx = divisor_scorelist.index(s)
+                new_namelist.append(divisor_namelist[indx])
+            divisor_namelist = new_namelist
+            divisor_scorelist = sortedscore
+            with open ("divisorscore.txt", "w") as divisor_score:
+                i = 0
+                while i < len(divisor_namelist):
+                    divisor_score.write(str(divisor_namelist[i])+'\n')
+                    divisor_score.write(str(divisor_scorelist[i])+'\n')
+                    i += 1
+        if scoresub != 1 and returnmenu.press() == True:
+            pagenumber = 0
+            
