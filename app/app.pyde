@@ -140,7 +140,13 @@ class NumberBubble():
         textFont(OpenSansExtraBold,25)
         textAlign(CENTER)
         scoretext = "Score: "+str(self.score)
+        if len(number_scorelist) == 0:
+            highscore = 0
+        else:
+            highscore = number_scorelist[0]
+        highscoretext = "High Score: "+str(highscore)
         text(scoretext,100,450)
+        text(highscoretext,100,475)
         
     def gameover(self):
         self.game = 1
@@ -191,12 +197,12 @@ class NumberBubble():
                             self.remove_bubble(i)
                             self.score += 1
                             self.lowhigh = random.randint(1,2)
-                        else:
+                        elif self.score != 0:
                             fill(124,10,2)
                             textFont(OpenSansExtraBold,25)
                             textAlign(CENTER)
                             text("-2",100,425)
-                            self.score -= 2
+                            self.score -= 1
                             
                 i += 1
         if self.game == 1:
@@ -209,7 +215,7 @@ class NumberBubble():
                 global scoresub
                 scoresub = 1
                 global gamename
-                gamename = "Divisor Snake"
+                gamename = "Chase the Number"
             
 class Timer():
     def __init__(self,sec):
@@ -239,7 +245,7 @@ class Timer():
             
             
 gamebubble = NumberBubble()
-chasetimer = Timer(10)
+chasetimer = Timer(60)
 
 def startup():
     global gamebubble
@@ -252,16 +258,16 @@ def setup():
     background(91,94,125)
     
     ### DOWNLOAD SCORES##
-    with open ("divisorscore.txt") as divisor_score:
+    with open ("numberscore.txt") as number_score:
         i = 0
-        global divisor_namelist
-        divisor_namelist = []
-        global divisor_scorelist
-        divisor_scorelist = []
-        lines = [x.replace('\n', '') for x in divisor_score.readlines()]
+        global number_namelist
+        number_namelist = []
+        global number_scorelist
+        number_scorelist = []
+        lines = [x.replace('\n', '') for x in number_score.readlines()]
         while i != len(lines):
-            divisor_namelist.append(lines[i])
-            divisor_scorelist.append(lines[i+1])
+            number_namelist.append(lines[i])
+            number_scorelist.append(int(lines[i+1]))
             i += 2
     
 def draw():
@@ -302,7 +308,7 @@ def draw():
         instructp("Chase The Numbers","INSTRUCTIONS:\n"
                   "- You will be asked to find the lowest or highest number in\na set of 10 numbers and destory it.\n"
                   "- You EARN 1 point for every number destroyed.\n"
-                  "- Select the wrong number and LOSE 2 points.\n"
+                  "- Select the wrong number and LOSE 1 point.\n"
                   "- Clear the board as fast as possible to be presented with\n another set of 10 numbers.\n"
                   "- Beware! You only have 60 seconds to earn as many points \nas possible.\n"
                   "- Watch for GREEN blocks to add time to the clock.")
@@ -375,10 +381,10 @@ def draw():
             strokeWeight(3)
             rect(10,65,680,300)
             scoreboard_text = ""
-            if gamename == "Divisor Snake":
+            if gamename == "Chase the Number":
                 i = 0
-                while i < len(divisor_namelist) and i < 5:
-                        scoreboard_text += "\n"+divisor_namelist[i]+" - "+"Score: "+divisor_scorelist[i]+"\n"
+                while i < len(number_namelist) and i < 5:
+                        scoreboard_text += "\n"+number_namelist[i]+" - "+"Score: "+str(number_scorelist[i])+"\n"
                         i += 1
                 fill(255)
                 OpenSansRegular = loadFont("OpenSans-48.vlw")
@@ -429,22 +435,22 @@ def mouseClicked():
             scoresub = 2
             global t
             t = 0
-            global divisor_namelist
-            divisor_namelist.append(str(cp5.get(Textfield, "").getText()))
-            global divisor_scorelist
-            divisor_scorelist.append(str(gamescore))
-            sortedscore = sorted(divisor_scorelist, reverse= True)
+            global number_namelist
+            number_namelist.append(str(cp5.get(Textfield, "").getText()))
+            global number_scorelist
+            number_scorelist.append(int(gamescore))
+            sortedscore = sorted(number_scorelist, reverse= True)
             new_namelist = []
             for s in sortedscore:
-                indx = divisor_scorelist.index(s)
-                new_namelist.append(divisor_namelist[indx])
-            divisor_namelist = new_namelist
-            divisor_scorelist = sortedscore
-            with open ("divisorscore.txt", "w") as divisor_score:
+                    indx = number_scorelist.index(s)
+                    new_namelist.append(number_namelist[indx])
+            number_namelist = new_namelist
+            number_scorelist = sorted(number_scorelist, reverse= True)
+            with open ("numberscore.txt", "w") as number_score:
                 i = 0
-                while i < len(divisor_namelist):
-                    divisor_score.write(str(divisor_namelist[i])+'\n')
-                    divisor_score.write(str(divisor_scorelist[i])+'\n')
+                while i < len(number_namelist):
+                    number_score.write(str(number_namelist[i])+'\n')
+                    number_score.write(str(number_scorelist[i])+'\n')
                     i += 1
         if scoresub != 1 and returnmenu.press() == True:
             pagenumber = 0
