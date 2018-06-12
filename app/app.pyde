@@ -9,7 +9,9 @@ add_library('controlP5')
 # Page 7 = Scoreboard Page
 import random
 pagenumber = 0
-resetgame = 0
+resetgame = 0 
+guesscounter = 0
+digitinfo = ""
 t = 0
 o = 0
 
@@ -310,6 +312,7 @@ def draw():
             gamescore = gamebubble.gameover()
             
     if pagenumber == 5: #Number Detective Screen
+
         if dif == 1:
             displaytext("Extra Bold",255,30,"Crack the code! You need to guess\nwhat the 3 digits of the code are...",350,50)
             leng = 3
@@ -334,6 +337,10 @@ def draw():
                 cp5.addTextfield("Guess Input").setLabel("").setText(inputtext[:leng]).setPosition(325,200).setSize(
                 120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
         submit_guess.create()
+        scoretext = "Your Guesses: "+str(guesscounter)        
+        displaytext("Extra Bold",255,25,scoretext,125,450)
+        #displaytext("Extra Bold",255,25,highscoretext,100,485)
+        displaytext("Extra Bold",255,25,digitinfo,525,375)
                 
             
     if pagenumber == 7: #Scoreboard Screen
@@ -420,8 +427,34 @@ def mouseClicked():
         gamebubble.press()
         
     if pagenumber == 5:
-        if submit_guess.press() == True and digit != int(cp5.get(Textfield, "Guess Input").getText()):
-            print(digit)
+        if submit_guess.press() == True and digit != int(cp5.get(Textfield, "Guess Input").getText()) and len(str(digit)) == len(cp5.get(Textfield, "Guess Input").getText()):
+            global guesscounter
+            guesscounter += 1
+            if digit < int(cp5.get(Textfield, "Guess Input").getText()):
+                loworhigh = "Too High"
+            if digit > int(cp5.get(Textfield, "Guess Input").getText()):
+                loworhigh = "Too Low"
+            digcorrect = 0
+            if str(digit)[0:1] == str(cp5.get(Textfield, "Guess Input").getText())[0:1]:
+                digcorrect += 1
+            if str(digit)[1:2] == str(cp5.get(Textfield, "Guess Input").getText())[1:2]:
+                digcorrect += 1
+            if str(digit)[2:3] == str(cp5.get(Textfield, "Guess Input").getText())[2:3]:
+                digcorrect += 1
+            if len(str(digit)) == 3:
+                correcttext = str(digcorrect)+" out of 3 digits correct!"
+            if len(str(digit)) == 4:
+                if str(digit)[3:4] == str(cp5.get(Textfield, "Guess Input").getText())[3:4]:
+                    digcorrect += 1
+                correcttext = str(digcorrect)+" out of 4 digits correct!"
+            if len(str(digit)) == 5:
+                if str(digit)[3:4] == str(cp5.get(Textfield, "Guess Input").getText())[3:4]:
+                    digcorrect += 1
+                if str(digit)[4:5] == str(cp5.get(Textfield, "Guess Input").getText())[4:5]:
+                    digcorrect += 1
+                correcttext = str(digcorrect)+" out of 5 digits correct!"
+            global digitinfo
+            digitinfo = "Guess: "+str(cp5.get(Textfield, "Guess Input").getText())+"\nWrong!\n"+loworhigh+"\n"+correcttext
             
     if pagenumber == 7:
         if scoresub == 1 and submit.press() == True and cp5.get(Textfield, "Name Input").getText() != "":
