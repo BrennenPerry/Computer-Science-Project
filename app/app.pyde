@@ -3,12 +3,10 @@ add_library('controlP5')
 # Page 1 = Chase the Number Instruction Page
 # Page 2 = Number Detective Instruction Page
 # Page 3 = Game 3 Instruction Page
-# Page 4 = Game 4 Instruction Page
-# Page 5 = Chase the Number Game Page
-# Page 6 = Number Detective Game Page
-# Page 7 = Game 3 Game Page
-# Page 8 = Game 4 Game Page
-# Page 9 = Scoreboard Page
+# Page 4 = Chase the Number Game Page
+# Page 5 = Number Detective Game Page
+# Page 6 = Game 3 Game Page
+# Page 7 = Scoreboard Page
 import random
 pagenumber = 0
 resetgame = 0
@@ -20,15 +18,18 @@ class Button():
         self.x = xPos
         self.y = yPos
         self.buttontext = buttontext
+        self.textsize = 20
         if buttonsize == 'Small':
             self.buttonwidth = 125
             self.buttonlength = 60
-            self.textsize = 20
             
         if buttonsize == 'Large':
             self.buttonwidth = 250
             self.buttonlength = 60
-            self.textsize = 20
+            
+        if buttonsize == 'Extra Large':
+            self.buttonwidth = 600
+            self.buttonlength = 60
             
     def create(self):
         fill(255,0,180)
@@ -39,34 +40,6 @@ class Button():
             return True
         else:
             return False
-
-
-### START - HOME PAGE ###
-chasing = Button(50,150,'Large','Chase The Numbers')
-number = Button(400,150,'Large','Number Detective') 
-game3 = Button(50,250,'Large','Game 3')
-game4 = Button(400,250,'Large','Game 4')
-### END - HOME PAGE ##
-
-### START - INSTRUCTION PAGE ###
-gamestart = Button(25,425,'Large','Start Game')
-viewboard = Button(425,425,'Large','View Scoreboard')
-returnmenu = Button(288,425,'Small','Menu')
-### END - INSTRUCTION PAGE ##
-
-exitgame = Button(25,425,'Large','Exit Game')
-savescore = Button(425,425,'Large','Save Score')
-
-### START - NUMBER DETECTIVE PAGE ###
-easybutton = Button(75,350,'Small','3 Digit')
-medbutton = Button(275,350,'Small','4 Digit')
-hardbutton = Button(475,350,'Small','5 Digit')
-newmenu = Button(50,425,'Large','Menu')
-newviewboard = Button(400,425,'Large','View Scoreboard')
-### END - NUMBER DETECTIVE PAGE ###
-
-submit = Button(550,250,'Small','Submit')
-submit_guess = Button(500,270,'Small','Submit')
 
 
 class NumberBubble():
@@ -113,11 +86,11 @@ class NumberBubble():
       
     def display(self):
         self.game = 0
-        i = 0
         if self.lowhigh == 1:
             displaytext("Extra Bold",255,35,"Select the LOWEST Number",350,50)
         if self.lowhigh == 2:
             displaytext("Extra Bold",255,35,"Select the HIGHEST Number",350,50)
+        i = 0
         while i < len(self.posX):
             fill(255)
             ellipse(self.posX[i],self.posY[i],50,36)
@@ -131,7 +104,7 @@ class NumberBubble():
             highscore = number_scorelist[0]
         highscoretext = "High Score: "+str(highscore)
         displaytext("Extra Bold",255,25,scoretext,100,450)
-        displaytext("Extra Bold",255,25,highscoretext,100,475)
+        displaytext("Extra Bold",255,25,highscoretext,100,485)
         
     def gameover(self):
         self.game = 1
@@ -182,9 +155,8 @@ class NumberBubble():
                             fill(124,10,2)
                             textFont(OpenSansExtraBold,25)
                             textAlign(CENTER)
-                            text("-2",100,425)
-                            self.score -= 1
-                            
+                            text("-1",100,425)
+                            self.score -= 1    
                 i += 1
         if self.game == 1:
             if exitgame.press() == True:
@@ -192,15 +164,11 @@ class NumberBubble():
                 pagenumber = 0
             if savescore.press() == True:
                 global pagenumber
-                pagenumber = 9
+                pagenumber = 7
                 global scoresub
                 scoresub = 1
                 global gamename
                 gamename = "Chase the Number"
-
-       
-                
-                
                 
 class Timer():
     def __init__(self,sec):
@@ -223,12 +191,33 @@ class Timer():
             return True
         else:
             return False
-            
-            
-gamebubble = NumberBubble()
-chasetimer = Timer(60)
+        
+### HOME PAGE BUTTONS ###
+chasing = Button(50,150,'Extra Large','Chase The Numbers')
+number = Button(50,250,'Extra Large','Number Detective') 
+game3 = Button(50,350,'Extra Large','Game 3')
 
-def startup():
+### INSTRUCTION PAGE BUTTONS ###
+gamestart = Button(25,425,'Large','Start Game')
+viewboard = Button(425,425,'Large','View Scoreboard')
+returnmenu = Button(288,425,'Small','Menu')
+    
+### NUMBER DETECTIVE BUTTONS ###
+easybutton = Button(75,350,'Small','3 Digit')
+medbutton = Button(275,350,'Small','4 Digit')
+hardbutton = Button(475,350,'Small','5 Digit')
+newmenu = Button(50,425,'Large','Menu')
+newviewboard = Button(400,425,'Large','View Scoreboard')
+submit_guess = Button(500,220,'Small','Submit')
+    
+### GAME OVER BUTTONS ###
+exitgame = Button(25,425,'Large','Exit Game')
+savescore = Button(425,425,'Large','Save Score')
+    
+### SCOREBOARD BUTTONS ###
+submit = Button(550,250,'Small','Submit')
+
+def startup(): # Create objects for class functions
     global gamebubble
     gamebubble = NumberBubble()
     global chasetimer
@@ -252,6 +241,7 @@ def displaytext(font,fontfill,fontsize,inputtext,posX,posY):
 def setup():
     size(700,500)
     background(91,94,125)
+    startup()
     
     ### DOWNLOAD SCORES##
     with open ("numberscore.txt") as number_score:
@@ -287,7 +277,6 @@ def draw():
         chasing.create()
         number.create()
         game3.create()
-        game4.create()
         
     if pagenumber == 1: # Set Up Chase the Numbers Page
         instructp("Chase The Numbers","INSTRUCTIONS:\n"
@@ -295,8 +284,7 @@ def draw():
                   "- You EARN 1 point for every number destroyed.\n"
                   "- Select the wrong number and LOSE 1 point.\n"
                   "- Clear the board as fast as possible to be presented with\n another set of 10 numbers.\n"
-                  "- Beware! You only have 60 seconds to earn as many points \nas possible.\n"
-                  "- Watch for GREEN blocks to add time to the clock.")
+                  "- Beware! You only have 60 seconds to earn as many points \nas possible.\n")
     
     if pagenumber == 2: # Set Up Divisor Snake
         displaytext("Extra Bold",255,50,"Number Detective",350,75)
@@ -311,7 +299,7 @@ def draw():
                   "- You'll also be told how many digits in the code you got\ncorrect, but won't know the positions.\n"
                   "Select your difficulty:",350,115)
         
-    if pagenumber == 5: # Chase the Number Game Screen
+    if pagenumber == 4: # Chase the Number Game Screen
         
         if chasetimer.timecheck() == True:
             gamebubble.display()
@@ -321,7 +309,7 @@ def draw():
             global gamescore
             gamescore = gamebubble.gameover()
             
-    if pagenumber == 6: #Number Detective Screen
+    if pagenumber == 5: #Number Detective Screen
         if dif == 1:
             displaytext("Extra Bold",255,30,"Crack the code! You need to guess\nwhat the 3 digits of the code are...",350,50)
             leng = 3
@@ -331,24 +319,24 @@ def draw():
         if dif == 3:
             displaytext("Extra Bold",255,30,"Crack the code! You need to guess\nwhat the 5 digits of the code are...",350,50)
             leng = 5
-        displaytext("Extra Bold",255,25,"Enter your guess:",175,305)
+        displaytext("Extra Bold",255,25,"Enter your guess:",175,255)
         global o
         if o == 0:
                 font = createFont("OpenSansBold", 35)
                 global cp5
                 cp5 = ControlP5(this)
-                cp5.addTextfield("").setPosition(325,250).setSize(
+                cp5.addTextfield("Guess Input").setLabel("").setPosition(325,200).setSize(
                 120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
                 o = 1
-        if len(cp5.get(Textfield, "").getText()) > leng:
-                inputtext = str(cp5.get(Textfield, "").getText())
+        if len(cp5.get(Textfield, "Guess Input").getText()) > leng:
                 font = createFont("OpenSansBold", 35)
-                cp5.addTextfield("").setText(inputtext[:leng]).setPosition(325,250).setSize(
+                inputtext = str(cp5.get(Textfield, "Guess Input").getText())
+                cp5.addTextfield("Guess Input").setLabel("").setText(inputtext[:leng]).setPosition(325,200).setSize(
                 120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
         submit_guess.create()
                 
             
-    if pagenumber == 9: #Scoreboard Screen
+    if pagenumber == 7: #Scoreboard Screen
         
         if scoresub == 1:
             displaytext("Extra Bold",255,40,"Score Submission",350,50)
@@ -360,13 +348,13 @@ def draw():
                 font = createFont("OpenSansBold", 20)
                 global cp5
                 cp5 = ControlP5(this)
-                cp5.addTextfield("").setPosition(175,250).setSize(
+                cp5.addTextfield("Name Input").setLabel("").setPosition(175,250).setSize(
                 350,60).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False)
                 t = 1
             submit.create()
             
         if scoresub == 2:
-            cp5.get("").hide()
+            cp5.get("Name Input").hide()
             displaytext("Extra Bold",255,40,"Score Submitted!",350,410)
             
         if scoresub == 2 or scoresub == 3:
@@ -395,9 +383,9 @@ def mouseClicked():
             pagenumber = 2
     if pagenumber == 1: # Chase the Numbers Instruction Buttons
         if gamestart.press() == True:
-            pagenumber = 5
+            pagenumber = 4
         if viewboard.press() == True:
-            pagenumber = 9
+            pagenumber = 7
             global gamename
             gamename = "Chase the Number"
             global scoresub
@@ -406,52 +394,54 @@ def mouseClicked():
             pagenumber = 0
     if pagenumber == 2: # Number Detective Instruction Buttons
         if easybutton.press() == True:
-            pagenumber = 6
+            pagenumber = 5
             global dif
             global digit
             dif = 1
             digit = random.randint(100,999)
         if medbutton.press() == True:
-            pagenumber = 6
+            pagenumber = 5
             global dif
             global digit
             dif = 2
             digit = random.randint(1000,9999)
         if hardbutton.press() == True:
-            pagenumber = 6
+            pagenumber = 5
             global dif
             global digit
             dif = 3
             digit = random.randint(10000,99999)
         if newviewboard.press() == True:
-            pagenumber = 9
+            pagenumber = 7
         if newmenu.press() == True:
             pagenumber = 0 
     
-    if pagenumber == 5:
+    if pagenumber == 4:
         gamebubble.press()
         
-    if pagenumber == 6:
-        if submit_guess.press() == True and digit != int(cp5.get(Textfield, "").getText()):
+    if pagenumber == 5:
+        if submit_guess.press() == True and digit != int(cp5.get(Textfield, "Guess Input").getText()):
             print(digit)
             
-    if pagenumber == 9:
-        if scoresub == 1 and submit.press() == True and cp5.get(Textfield, "").getText() != "":
+    if pagenumber == 7:
+        if scoresub == 1 and submit.press() == True and cp5.get(Textfield, "Name Input").getText() != "":
             global scoresub
             scoresub = 2
             global t
             t = 0
             global number_namelist
-            number_namelist.append(str(cp5.get(Textfield, "").getText()))
+            number_namelist.append(str(cp5.get(Textfield, "Name Input").getText()))
             global number_scorelist
             number_scorelist.append(int(gamescore))
             sortedscore = sorted(number_scorelist, reverse= True)
             new_namelist = []
             for s in sortedscore:
                     indx = number_scorelist.index(s)
+                    number_scorelist.pop(indx)
                     new_namelist.append(number_namelist[indx])
+                    number_namelist.pop(indx)
             number_namelist = new_namelist
-            number_scorelist = sorted(number_scorelist, reverse= True)
+            number_scorelist = sortedscore
             with open ("numberscore.txt", "w") as number_score:
                 i = 0
                 while i < len(number_namelist):
