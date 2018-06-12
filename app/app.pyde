@@ -33,12 +33,7 @@ class Button():
     def create(self):
         fill(255,0,180)
         rect(self.x,self.y,self.buttonwidth,self.buttonlength)
-        fill(255)
-        OpenSans = loadFont("OpenSans-Extrabold-48.vlw")
-        textFont(OpenSans,self.textsize)
-        textAlign(CENTER)
-        text(self.buttontext,self.x+(self.buttonwidth/2),self.y+(self.buttonlength/2)+(self.buttonlength/8))
-        
+        displaytext("Extra Bold",255,self.textsize,self.buttontext,self.x+(self.buttonwidth/2),self.y+(self.buttonlength/2)+(self.buttonlength/8))
     def press(self):
         if self.x<mouseX<self.x+self.buttonwidth and self.y<mouseY<self.y+self.buttonlength:
             return True
@@ -71,6 +66,7 @@ newviewboard = Button(400,425,'Large','View Scoreboard')
 ### END - NUMBER DETECTIVE PAGE ###
 
 submit = Button(550,250,'Small','Submit')
+submit_guess = Button(500,270,'Small','Submit')
 
 
 class NumberBubble():
@@ -117,48 +113,32 @@ class NumberBubble():
       
     def display(self):
         self.game = 0
-        i = 0            
-        OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
-        fill(255)
-        textFont(OpenSansExtraBold,35)
-        textAlign(CENTER)
+        i = 0
         if self.lowhigh == 1:
-            text("Select the LOWEST Number",350,50)
+            displaytext("Extra Bold",255,35,"Select the LOWEST Number",350,50)
         if self.lowhigh == 2:
-            text("Select the HIGHEST Number",350,50)
+            displaytext("Extra Bold",255,35,"Select the HIGHEST Number",350,50)
         while i < len(self.posX):
             fill(255)
-            ellipse(self.posX[i],self.posY[i],50,36)                
-            OpenSansBold = loadFont("OpenSans-Bold-48.vlw")
-            fill(0)
-            textFont(OpenSansBold,20)
-            textAlign(CENTER)
-            text(self.number_list[i],self.posX[i],self.posY[i]+8)
+            ellipse(self.posX[i],self.posY[i],50,36)
+            displaytext("Bold",0,20,self.number_list[i],self.posX[i],self.posY[i]+8)
             i += 1
-    
-        OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
-        fill(255)
-        textFont(OpenSansExtraBold,25)
-        textAlign(CENTER)
+
         scoretext = "Score: "+str(self.score)
         if len(number_scorelist) == 0:
             highscore = 0
         else:
             highscore = number_scorelist[0]
         highscoretext = "High Score: "+str(highscore)
-        text(scoretext,100,450)
-        text(highscoretext,100,475)
+        displaytext("Extra Bold",255,25,scoretext,100,450)
+        displaytext("Extra Bold",255,25,highscoretext,100,475)
         
     def gameover(self):
         self.game = 1
         self.posX = []
         self.posY = []
         self.number_list = []
-        OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
-        fill(255)
-        textFont(OpenSansExtraBold,50)
-        textAlign(CENTER)
-        text("Game Over!",350,250)
+        displaytext("Extra Bold",255,50,"Game Over!",350,250)
         global resetgame
         resetgame = 1
         exitgame.create()
@@ -228,12 +208,8 @@ class Timer():
         self.starttimer = millis()
         
     def update(self):
-        OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
-        fill(255)
-        textFont(OpenSansExtraBold,35)
-        textAlign(CENTER)
         timetext = "Time Left: "+str(self.sec)
-        text(timetext,550,475)
+        displaytext("Extra Bold",255,35,timetext,550,475)
         
         timedif = millis() - self.starttimer
         
@@ -258,6 +234,21 @@ def startup():
     global chasetimer
     chasetimer = Timer(60)
     
+def displaytext(font,fontfill,fontsize,inputtext,posX,posY):
+    if font == "Extra Bold":
+        OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
+        textFont(OpenSansExtraBold,fontsize)
+    if font == "Bold":
+        OpenSansBold = loadFont("OpenSans-Bold-48.vlw")
+        textFont(OpenSansBold,fontsize)
+    if font == "Regular":
+        OpenSansRegular = loadFont("OpenSans-48.vlw")
+        textFont(OpenSansRegular,fontsize)
+    fill(fontfill)
+    textAlign(CENTER)
+    text(inputtext,posX,posY)
+    
+    
 def setup():
     size(700,500)
     background(91,94,125)
@@ -280,18 +271,11 @@ def draw():
     background(91,94,125)
     
     def instructp(title,instructiontext): # Create instruction page
-        OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
-        fill(255)
-        textFont(OpenSansBold,50)
-        textAlign(CENTER)
-        text(title,350,75)
+        displaytext("Extra Bold",255,50,title,350,75)
         gamestart.create()
         viewboard.create()
         returnmenu.create()
-        OpenSansRegular = loadFont("OpenSans-48.vlw")
-        textFont(OpenSansRegular,24)
-        textAlign(CENTER)
-        text(instructiontext,350,115)
+        displaytext("Regular",255,24,instructiontext,350,115)
     
     if pagenumber == 0: # Set Up Home Page
         global resetgame
@@ -299,11 +283,7 @@ def draw():
             startup()
             resetgame = 0
             timerset = 0
-        OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
-        fill(255)
-        textFont(OpenSansBold,50)
-        textAlign(CENTER)
-        text("Math Games!",350,75)
+        displaytext("Extra Bold",255,50,"Math Games!",350,75)
         chasing.create()
         number.create()
         game3.create()
@@ -319,20 +299,13 @@ def draw():
                   "- Watch for GREEN blocks to add time to the clock.")
     
     if pagenumber == 2: # Set Up Divisor Snake
-        OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
-        fill(255)
-        textFont(OpenSansBold,50)
-        textAlign(CENTER)
-        text("Number Detective",350,75)
+        displaytext("Extra Bold",255,50,"Number Detective",350,75)
         easybutton.create()
         medbutton.create()
         hardbutton.create()
         newviewboard.create()
         newmenu.create()
-        OpenSansRegular = loadFont("OpenSans-48.vlw")
-        textFont(OpenSansRegular,24)
-        textAlign(CENTER)
-        text("INSTRUCTIONS:\n"
+        displaytext("Regular",255,24,"INSTRUCTIONS:\n"
                   "- You've been given the job of cracking a secret code in the\nleast amount of tries.\n"
                   "- Once you make a guess of what the secret code is you'll be\ntold whether it's too high or too low.\n"
                   "- You'll also be told how many digits in the code you got\ncorrect, but won't know the positions.\n"
@@ -349,43 +322,39 @@ def draw():
             gamescore = gamebubble.gameover()
             
     if pagenumber == 6: #Number Detective Screen
-        OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
-        fill(255)
-        textFont(OpenSansBold,30)
-        textAlign(CENTER)
         if dif == 1:
-            text("Crack the code! You need to guess\nwhat the 3 digits of the code are...",350,50)
+            displaytext("Extra Bold",255,30,"Crack the code! You need to guess\nwhat the 3 digits of the code are...",350,50)
+            leng = 3
         if dif == 2:
-            text("Crack the code! You need to guess\nwhat the 4 digits of the code are...",350,50)
+            displaytext("Extra Bold",255,30,"Crack the code! You need to guess\nwhat the 4 digits of the code are...",350,50)
+            leng = 4
         if dif == 3:
-            text("Crack the code! You need to guess\nwhat the 5 digits of the code are...",350,50)
-        textFont(OpenSansBold,20)
-        text("Enter your guess:",140,285)
+            displaytext("Extra Bold",255,30,"Crack the code! You need to guess\nwhat the 5 digits of the code are...",350,50)
+            leng = 5
+        displaytext("Extra Bold",255,25,"Enter your guess:",175,305)
         global o
         if o == 0:
-                font = createFont("OpenSansBold", 20)
+                font = createFont("OpenSansBold", 35)
                 global cp5
                 cp5 = ControlP5(this)
-                cp5.addTextfield("").setPosition(250,250).setSize(
-                275,60).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
+                cp5.addTextfield("").setPosition(325,250).setSize(
+                120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
                 o = 1
-        submit.create()
+        if len(cp5.get(Textfield, "").getText()) > leng:
+                inputtext = str(cp5.get(Textfield, "").getText())
+                font = createFont("OpenSansBold", 35)
+                cp5.addTextfield("").setText(inputtext[:leng]).setPosition(325,250).setSize(
+                120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
+        submit_guess.create()
                 
             
     if pagenumber == 9: #Scoreboard Screen
         
-        OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
-        fill(255)
-        textFont(OpenSansBold,40)
-        textAlign(CENTER)
-        
         if scoresub == 1:
-            text("Score Submission",350,50)
-            textFont(OpenSansBold,30)
+            displaytext("Extra Bold",255,40,"Score Submission",350,50)
             scoretxt = "Your Score: "+str(gamescore)
-            text(scoretxt,350,200)
-            textFont(OpenSansBold,25)
-            text("Name:",100,290)
+            displaytext("Extra Bold",255,30,scoretxt,350,200)
+            displaytext("Extra Bold",255,25,"Name:",100,290)
             global t
             if t == 0:
                 font = createFont("OpenSansBold", 20)
@@ -398,15 +367,11 @@ def draw():
             
         if scoresub == 2:
             cp5.get("").hide()
-            OpenSansBold = loadFont("OpenSans-Extrabold-48.vlw")
-            fill(255)
-            textFont(OpenSansBold,40)
-            textAlign(CENTER)
-            text("Score Submitted!",350,410)
+            displaytext("Extra Bold",255,40,"Score Submitted!",350,410)
             
         if scoresub == 2 or scoresub == 3:
             headline = "Scoreboard - "+gamename
-            text(headline,350,50)
+            displaytext("Extra Bold",255,40,headline,350,50)
             fill(255,0,0,0)
             strokeWeight(3)
             rect(10,65,680,300)
@@ -416,11 +381,7 @@ def draw():
                 while i < len(number_namelist) and i < 5:
                         scoreboard_text += "\n"+number_namelist[i]+" - "+"Score: "+str(number_scorelist[i])+"\n"
                         i += 1
-                fill(255)
-                OpenSansRegular = loadFont("OpenSans-48.vlw")
-                textFont(OpenSansRegular,24)
-                textAlign(CENTER)
-                text(scoreboard_text,350,70)
+                displaytext("Regular",255,24,scoreboard_text,350,70)
             strokeWeight(1)
             returnmenu.create()
                 
@@ -471,7 +432,7 @@ def mouseClicked():
         gamebubble.press()
         
     if pagenumber == 6:
-        if submit.press() == True and digit != int(cp5.get(Textfield, "").getText()):
+        if submit_guess.press() == True and digit != int(cp5.get(Textfield, "").getText()):
             print(digit)
             
     if pagenumber == 9:
