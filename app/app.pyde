@@ -13,7 +13,6 @@ resetgame = 0
 guesscounter = 0
 digitinfo = ""
 t = 0
-o = 0
 
 class Button():
     def __init__(self,xPos,yPos,buttonsize,buttontext):
@@ -257,6 +256,17 @@ def setup():
             number_namelist.append(lines[i])
             number_scorelist.append(int(lines[i+1]))
             i += 2
+    with open ("detectivescore.txt") as detective_score:
+        i = 0
+        global detective_namelist
+        detective_namelist = []
+        global detective_scorelist
+        detective_scorelist = []
+        lines = [x.replace('\n', '') for x in detective_score.readlines()]
+        while i != len(lines):
+            detective_namelist.append(lines[i])
+            detective_scorelist.append(int(lines[i+1]))
+            i += 2
     
 def draw():
     global pagenumber
@@ -312,42 +322,42 @@ def draw():
             gamescore = gamebubble.gameover()
             
     if pagenumber == 5: #Number Detective Screen
-
-        if dif == 1:
-            displaytext("Extra Bold",255,30,"Crack the code! You need to guess\nwhat the 3 digits of the code are...",350,50)
-            leng = 3
-        if dif == 2:
-            displaytext("Extra Bold",255,30,"Crack the code! You need to guess\nwhat the 4 digits of the code are...",350,50)
-            leng = 4
-        if dif == 3:
-            displaytext("Extra Bold",255,30,"Crack the code! You need to guess\nwhat the 5 digits of the code are...",350,50)
-            leng = 5
-        displaytext("Extra Bold",255,25,"Enter your guess:",175,255)
-        global o
-        if o == 0:
-                font = createFont("OpenSansBold", 35)
-                global cp5
-                cp5 = ControlP5(this)
-                cp5.addTextfield("Guess Input").setLabel("").setPosition(325,200).setSize(
-                120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
-                o = 1
-        if len(cp5.get(Textfield, "Guess Input").getText()) > leng:
-                font = createFont("OpenSansBold", 35)
-                inputtext = str(cp5.get(Textfield, "Guess Input").getText())
-                cp5.addTextfield("Guess Input").setLabel("").setText(inputtext[:leng]).setPosition(325,200).setSize(
-                120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
-        submit_guess.create()
-        scoretext = "Your Guesses: "+str(guesscounter)        
-        displaytext("Extra Bold",255,25,scoretext,125,450)
-        #displaytext("Extra Bold",255,25,highscoretext,100,485)
-        displaytext("Extra Bold",255,25,digitinfo,525,375)
+        
+        if digitguess == 0:
+            if dif == 1:
+                displaytext("Extra Bold",255,30,"Crack the code! You need to guess\nwhat the 3 digits of the code are...",350,50)
+                leng = 3
+            if dif == 2:
+                displaytext("Extra Bold",255,30,"Crack the code! You need to guess\nwhat the 4 digits of the code are...",350,50)
+                leng = 4
+            if dif == 3:
+                displaytext("Extra Bold",255,30,"Crack the code! You need to guess\nwhat the 5 digits of the code are...",350,50)
+                leng = 5
+            displaytext("Extra Bold",255,25,"Enter your guess:",175,255)
+            guessbox.show()
+            if len(guessbox.getText()) > leng:
+                inputtext = str(guessbox.getText())
+                guessbox.setText(inputtext[:leng])
+            submit_guess.create()
+            scoretext = "Your Guesses: "+str(guesscounter)        
+            displaytext("Extra Bold",255,25,scoretext,125,450)
+            #displaytext("Extra Bold",255,25,highscoretext,100,485)
+            displaytext("Extra Bold",255,25,digitinfo,525,375)
+        
+        if digitguess == 1:
+            displaytext("Extra Bold",255,50,"You Cracked the Code!",350,250)
+            exitgame.create()
+            savescore.create()
                 
             
     if pagenumber == 7: #Scoreboard Screen
         
         if scoresub == 1:
             displaytext("Extra Bold",255,40,"Score Submission",350,50)
-            scoretxt = "Your Score: "+str(gamescore)
+            if gamename == "Chase the Number":
+                scoretxt = "Your Score: "+str(gamescore)
+            if gamename == "Number Detective":
+                scoretxt = "# of Guesses: "+str(gamescore)
             displaytext("Extra Bold",255,30,scoretxt,350,200)
             displaytext("Extra Bold",255,25,"Name:",100,290)
             global t
@@ -355,13 +365,14 @@ def draw():
                 font = createFont("OpenSansBold", 20)
                 global cp5
                 cp5 = ControlP5(this)
-                cp5.addTextfield("Name Input").setLabel("").setPosition(175,250).setSize(
+                global namebox
+                namebox = cp5.addTextfield("Name Input").setLabel("").setPosition(175,250).setSize(
                 350,60).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False)
                 t = 1
             submit.create()
             
         if scoresub == 2:
-            cp5.get("Name Input").hide()
+            namebox.hide()
             displaytext("Extra Bold",255,40,"Score Submitted!",350,410)
             
         if scoresub == 2 or scoresub == 3:
@@ -376,7 +387,12 @@ def draw():
                 while i < len(number_namelist) and i < 5:
                         scoreboard_text += "\n"+number_namelist[i]+" - "+"Score: "+str(number_scorelist[i])+"\n"
                         i += 1
-                displaytext("Regular",255,24,scoreboard_text,350,70)
+            if gamename == "Number Detective":
+                i = 0
+                while i < len(detective_namelist) and i < 5:
+                        scoreboard_text += "\n"+detective_namelist[i]+" - "+"Score: "+str(detective_scorelist[i])+"\n"
+                        i += 1
+            displaytext("Regular",255,24,scoreboard_text,350,70)
             strokeWeight(1)
             returnmenu.create()
                 
@@ -404,22 +420,50 @@ def mouseClicked():
             pagenumber = 5
             global dif
             global digit
+            global digitguess
             dif = 1
             digit = random.randint(100,999)
+            digitguess = 0
+            font = createFont("OpenSansBold", 35)
+            global cp5
+            cp5 = ControlP5(this)
+            global guessbox
+            guessbox = cp5.addTextfield("Guess Input").setLabel("").setPosition(325,200).setSize(
+            120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
         if medbutton.press() == True:
             pagenumber = 5
             global dif
             global digit
+            global digitguess
             dif = 2
             digit = random.randint(1000,9999)
+            digitguess = 0
+            font = createFont("OpenSansBold", 35)
+            global cp5
+            cp5 = ControlP5(this)
+            global guessbox
+            guessbox = cp5.addTextfield("Guess Input").setLabel("").setPosition(325,200).setSize(
+            120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
         if hardbutton.press() == True:
             pagenumber = 5
             global dif
             global digit
+            global digitguess
             dif = 3
             digit = random.randint(10000,99999)
+            digitguess = 0
+            font = createFont("OpenSansBold", 35)
+            global cp5
+            cp5 = ControlP5(this)
+            global guessbox
+            guessbox = cp5.addTextfield("Guess Input").setLabel("").setPosition(325,200).setSize(
+            120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
         if newviewboard.press() == True:
             pagenumber = 7
+            global gamename
+            gamename = "Number Detective"
+            global scoresub
+            scoresub = 3
         if newmenu.press() == True:
             pagenumber = 0 
     
@@ -427,60 +471,102 @@ def mouseClicked():
         gamebubble.press()
         
     if pagenumber == 5:
-        if submit_guess.press() == True and digit != int(cp5.get(Textfield, "Guess Input").getText()) and len(str(digit)) == len(cp5.get(Textfield, "Guess Input").getText()):
+        if submit_guess.press() == True and digit == int(guessbox.getText()) and digitguess == 0:
+            digitguess = 1
             global guesscounter
             guesscounter += 1
-            if digit < int(cp5.get(Textfield, "Guess Input").getText()):
+            guessbox.hide()
+        elif submit_guess.press() == True and digit != int(guessbox.getText()) and len(str(digit)) == len(guessbox.getText()) and digitguess == 0:
+            global guesscounter
+            guesscounter += 1
+            if digit < int(guessbox.getText()):
                 loworhigh = "Too High"
-            if digit > int(cp5.get(Textfield, "Guess Input").getText()):
+            if digit > int(guessbox.getText()):
                 loworhigh = "Too Low"
             digcorrect = 0
-            if str(digit)[0:1] == str(cp5.get(Textfield, "Guess Input").getText())[0:1]:
+            if str(digit)[0:1] == str(guessbox.getText())[0:1]:
                 digcorrect += 1
-            if str(digit)[1:2] == str(cp5.get(Textfield, "Guess Input").getText())[1:2]:
+            if str(digit)[1:2] == str(guessbox.getText())[1:2]:
                 digcorrect += 1
-            if str(digit)[2:3] == str(cp5.get(Textfield, "Guess Input").getText())[2:3]:
+            if str(digit)[2:3] == str(guessbox.getText())[2:3]:
                 digcorrect += 1
             if len(str(digit)) == 3:
                 correcttext = str(digcorrect)+" out of 3 digits correct!"
             if len(str(digit)) == 4:
-                if str(digit)[3:4] == str(cp5.get(Textfield, "Guess Input").getText())[3:4]:
+                if str(digit)[3:4] == str(guessbox.getText())[3:4]:
                     digcorrect += 1
                 correcttext = str(digcorrect)+" out of 4 digits correct!"
             if len(str(digit)) == 5:
-                if str(digit)[3:4] == str(cp5.get(Textfield, "Guess Input").getText())[3:4]:
+                if str(digit)[3:4] == str(guessbox.getText())[3:4]:
                     digcorrect += 1
-                if str(digit)[4:5] == str(cp5.get(Textfield, "Guess Input").getText())[4:5]:
+                if str(digit)[4:5] == str(guessbox.getText())[4:5]:
                     digcorrect += 1
                 correcttext = str(digcorrect)+" out of 5 digits correct!"
             global digitinfo
-            digitinfo = "Guess: "+str(cp5.get(Textfield, "Guess Input").getText())+"\nWrong!\n"+loworhigh+"\n"+correcttext
+            digitinfo = "Guess: "+str(guessbox.getText())+"\nWrong!\n"+loworhigh+"\n"+correcttext
+            guessbox.setText("")
+            print(digit)
+            
+        elif digitguess == 1:
+            if exitgame.press() == True:
+                global pagenumber
+                pagenumber = 0
+            if savescore.press() == True:
+                global pagenumber
+                pagenumber = 7
+                global scoresub
+                scoresub = 1
+                global gamename
+                gamename = "Number Detective"
+                global gamescore
+                gamescore = guesscounter
             
     if pagenumber == 7:
-        if scoresub == 1 and submit.press() == True and cp5.get(Textfield, "Name Input").getText() != "":
+        if scoresub == 1 and submit.press() == True and namebox.getText() != "":
             global scoresub
             scoresub = 2
             global t
             t = 0
-            global number_namelist
-            number_namelist.append(str(cp5.get(Textfield, "Name Input").getText()))
-            global number_scorelist
-            number_scorelist.append(int(gamescore))
-            sortedscore = sorted(number_scorelist, reverse= True)
-            new_namelist = []
-            for s in sortedscore:
+            if gamename == "Chase the Number":
+                global number_namelist
+                number_namelist.append(str(namebox.getText()))
+                global number_scorelist
+                number_scorelist.append(int(gamescore))
+                sortedscore = sorted(number_scorelist, reverse= True)
+                new_namelist = []
+                for s in sortedscore:
                     indx = number_scorelist.index(s)
                     number_scorelist.pop(indx)
                     new_namelist.append(number_namelist[indx])
                     number_namelist.pop(indx)
-            number_namelist = new_namelist
-            number_scorelist = sortedscore
-            with open ("numberscore.txt", "w") as number_score:
-                i = 0
-                while i < len(number_namelist):
-                    number_score.write(str(number_namelist[i])+'\n')
-                    number_score.write(str(number_scorelist[i])+'\n')
-                    i += 1
+                number_namelist = new_namelist
+                number_scorelist = sortedscore
+                with open ("numberscore.txt", "w") as number_score:
+                    i = 0
+                    while i < len(number_namelist):
+                        number_score.write(str(number_namelist[i])+'\n')
+                        number_score.write(str(number_scorelist[i])+'\n')
+                        i += 1
+            if gamename == "Number Detective":
+                global detective_namelist
+                detective_namelist.append(str(namebox.getText()))
+                global detective_scorelist
+                detective_scorelist.append(int(gamescore))
+                sortedscore = sorted(detective_scorelist, reverse= False)
+                new_namelist = []
+                for s in sortedscore:
+                    indx = detective_scorelist.index(s)
+                    detective_scorelist.pop(indx)
+                    new_namelist.append(detective_namelist[indx])
+                    detective_namelist.pop(indx)
+                detective_namelist = new_namelist
+                detective_scorelist = sortedscore
+                with open ("detectivescore.txt", "w") as detective_score:
+                    i = 0
+                    while i < len(detective_namelist):
+                        detective_score.write(str(detective_namelist[i])+'\n')
+                        detective_score.write(str(detective_scorelist[i])+'\n')
+                        i += 1
         if scoresub != 1 and returnmenu.press() == True:
             pagenumber = 0
             
