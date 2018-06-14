@@ -13,6 +13,7 @@ resetgame = 0
 guesscounter = 0
 digitinfo = ""
 t = 0
+difcheck = 0
 
 class Button():
     def __init__(self,xPos,yPos,buttonsize,buttontext):
@@ -267,6 +268,28 @@ def setup():
             detective1_namelist.append(lines[i])
             detective1_scorelist.append(int(lines[i+1]))
             i += 2
+    with open ("detectivescore2.txt") as detective2_score:
+        i = 0
+        global detective2_namelist
+        detective2_namelist = []
+        global detective2_scorelist
+        detective2_scorelist = []
+        lines = [x.replace('\n', '') for x in detective2_score.readlines()]
+        while i != len(lines):
+            detective2_namelist.append(lines[i])
+            detective2_scorelist.append(int(lines[i+1]))
+            i += 2
+    with open ("detectivescore3.txt") as detective3_score:
+        i = 0
+        global detective3_namelist
+        detective3_namelist = []
+        global detective3_scorelist
+        detective3_scorelist = []
+        lines = [x.replace('\n', '') for x in detective3_score.readlines()]
+        while i != len(lines):
+            detective3_namelist.append(lines[i])
+            detective3_scorelist.append(int(lines[i+1]))
+            i += 2
     
 def draw():
     global pagenumber
@@ -298,18 +321,26 @@ def draw():
                   "- Clear the board as fast as possible to be presented with\n another set of 10 numbers.\n"
                   "- Beware! You only have 60 seconds to earn as many points \nas possible.\n")
     
-    if pagenumber == 2: # Set Up Divisor Snake
-        displaytext("Extra Bold",255,50,"Number Detective",350,75)
-        easybutton.create()
-        medbutton.create()
-        hardbutton.create()
-        newviewboard.create()
-        newmenu.create()
-        displaytext("Regular",255,24,"INSTRUCTIONS:\n"
+    if pagenumber == 2: # Set Up Number Detevtive
+        global difcheck
+        if difcheck != 1:
+            displaytext("Extra Bold",255,50,"Number Detective",350,75)
+            easybutton.create()
+            medbutton.create()
+            hardbutton.create()
+            newviewboard.create()
+            newmenu.create()
+            displaytext("Regular",255,24,"INSTRUCTIONS:\n"
                   "- You've been given the job of cracking a secret code in the\nleast amount of tries.\n"
                   "- Once you make a guess of what the secret code is you'll be\ntold whether it's too high or too low.\n"
                   "- You'll also be told how many digits in the code you got\ncorrect, but won't know the positions.\n"
                   "Select your difficulty:",350,115)
+            
+        if difcheck == 1:
+            displaytext("Extra Bold",255,30,"Select what scoreboard you want to view:",350,200)
+            easybutton.create()
+            medbutton.create()
+            hardbutton.create()
         
     if pagenumber == 4: # Chase the Number Game Screen
         
@@ -389,8 +420,14 @@ def draw():
                         i += 1
             if gamename == "Number Detective":
                 i = 0
-                while i < len(detective1_namelist) and i < 5:
+                while i < len(detective1_namelist) and i < 5 and dif == 1:
                         scoreboard_text += "\n"+detective1_namelist[i]+" - "+"Score: "+str(detective1_scorelist[i])+"\n"
+                        i += 1
+                while i < len(detective2_namelist) and i < 5 and dif == 2:
+                        scoreboard_text += "\n"+detective2_namelist[i]+" - "+"Score: "+str(detective2_scorelist[i])+"\n"
+                        i += 1
+                while i < len(detective3_namelist) and i < 5 and dif == 3:
+                        scoreboard_text += "\n"+detective3_namelist[i]+" - "+"Score: "+str(detective3_scorelist[i])+"\n"
                         i += 1
             displaytext("Regular",255,24,scoreboard_text,350,70)
             strokeWeight(1)
@@ -398,7 +435,15 @@ def draw():
                 
 
 def mouseClicked():
+    global gamename
     global pagenumber
+    global scoresub
+    global difcheck
+    global dif
+    global digit
+    global digitguess
+    global guessbox
+    global cp5
     if pagenumber == 0: # Home Page Buttons
         if chasing.press() == True:
             pagenumber = 1
@@ -409,62 +454,60 @@ def mouseClicked():
             pagenumber = 4
         if viewboard.press() == True:
             pagenumber = 7
-            global gamename
             gamename = "Chase the Number"
-            global scoresub
             scoresub = 3
         if returnmenu.press() == True:
             pagenumber = 0
     if pagenumber == 2: # Number Detective Instruction Buttons
         if easybutton.press() == True:
-            pagenumber = 5
-            global dif
-            global digit
-            global digitguess
-            dif = 1
-            digit = random.randint(100,999)
-            digitguess = 0
-            font = createFont("OpenSansBold", 35)
-            global cp5
-            cp5 = ControlP5(this)
-            global guessbox
-            guessbox = cp5.addTextfield("Guess Input").setLabel("").setPosition(325,200).setSize(
-            120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
+            if difcheck != 1:
+                pagenumber = 5
+                dif = 1
+                digit = random.randint(100,999)
+                digitguess = 0
+                font = createFont("OpenSansBold", 35)
+                cp5 = ControlP5(this)
+                guessbox = cp5.addTextfield("Guess Input").setLabel("").setPosition(325,200).setSize(
+                120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
+            if difcheck == 1:
+                dif = 1
+                pagenumber = 7
+                difcheck = 0
         if medbutton.press() == True:
-            pagenumber = 5
-            global dif
-            global digit
-            global digitguess
-            dif = 2
-            digit = random.randint(1000,9999)
-            digitguess = 0
-            font = createFont("OpenSansBold", 35)
-            global cp5
-            cp5 = ControlP5(this)
-            global guessbox
-            guessbox = cp5.addTextfield("Guess Input").setLabel("").setPosition(325,200).setSize(
-            120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
+            if difcheck != 1:
+                pagenumber = 5
+                dif = 2
+                digit = random.randint(1000,9999)
+                digitguess = 0
+                font = createFont("OpenSansBold", 35)
+                cp5 = ControlP5(this)
+                guessbox = cp5.addTextfield("Guess Input").setLabel("").setPosition(325,200).setSize(
+                120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
+            if difcheck == 1:
+                dif = 2
+                pagenumber = 7
+                difcheck = 0
         if hardbutton.press() == True:
-            pagenumber = 5
-            global dif
-            global digit
-            global digitguess
-            dif = 3
-            digit = random.randint(10000,99999)
-            digitguess = 0
-            font = createFont("OpenSansBold", 35)
-            global cp5
-            cp5 = ControlP5(this)
-            global guessbox
-            guessbox = cp5.addTextfield("Guess Input").setLabel("").setPosition(325,200).setSize(
-            120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
-        if newviewboard.press() == True:
-            pagenumber = 7
+            if difcheck != 1:
+                pagenumber = 5
+                dif = 3
+                digit = random.randint(10000,99999)
+                digitguess = 0
+                font = createFont("OpenSansBold", 35)
+                cp5 = ControlP5(this)
+                guessbox = cp5.addTextfield("Guess Input").setLabel("").setPosition(325,200).setSize(
+                120,100).setFont(font).setFocus(True).setColor(color(255)).setAutoClear(False).setInputFilter(ControlP5.INTEGER)
+            if difcheck == 1:
+                dif = 3
+                pagenumber = 7
+                difcheck = 0
+        if newviewboard.press() == True and difcheck != 1:
+            difcheck = 1
             global gamename
             gamename = "Number Detective"
             global scoresub
             scoresub = 3
-        if newmenu.press() == True:
+        if newmenu.press() == True and difcheck != 1:
             pagenumber = 0 
     
     if pagenumber == 4:
@@ -547,7 +590,7 @@ def mouseClicked():
                         number_score.write(str(number_namelist[i])+'\n')
                         number_score.write(str(number_scorelist[i])+'\n')
                         i += 1
-            if gamename == "Number Detective":
+            if gamename == "Number Detective" and dif == 1:
                 global detective1_namelist
                 detective1_namelist.append(str(namebox.getText()))
                 global detective1_scorelist
@@ -566,6 +609,46 @@ def mouseClicked():
                     while i < len(detective1_namelist):
                         detective1_score.write(str(detective1_namelist[i])+'\n')
                         detective1_score.write(str(detective1_scorelist[i])+'\n')
+                        i += 1
+            if gamename == "Number Detective" and dif == 2:
+                global detective2_namelist
+                detective2_namelist.append(str(namebox.getText()))
+                global detective2_scorelist
+                detective2_scorelist.append(int(gamescore))
+                sortedscore = sorted(detective2_scorelist, reverse= False)
+                new_namelist = []
+                for s in sortedscore:
+                    indx = detective2_scorelist.index(s)
+                    detective2_scorelist.pop(indx)
+                    new_namelist.append(detective2_namelist[indx])
+                    detective2_namelist.pop(indx)
+                detective2_namelist = new_namelist
+                detective2_scorelist = sortedscore
+                with open ("detectivescore2.txt", "w") as detective2_score:
+                    i = 0
+                    while i < len(detective2_namelist):
+                        detective2_score.write(str(detective2_namelist[i])+'\n')
+                        detective2_score.write(str(detective2_scorelist[i])+'\n')
+                        i += 1    
+            if gamename == "Number Detective" and dif == 3:
+                global detective3_namelist
+                detective3_namelist.append(str(namebox.getText()))
+                global detective3_scorelist
+                detective3_scorelist.append(int(gamescore))
+                sortedscore = sorted(detective3_scorelist, reverse= False)
+                new_namelist = []
+                for s in sortedscore:
+                    indx = detective3_scorelist.index(s)
+                    detective3_scorelist.pop(indx)
+                    new_namelist.append(detective3_namelist[indx])
+                    detective3_namelist.pop(indx)
+                detective3_namelist = new_namelist
+                detective3_scorelist = sortedscore
+                with open ("detectivescore3.txt", "w") as detective3_score:
+                    i = 0
+                    while i < len(detective3_namelist):
+                        detective3_score.write(str(detective3_namelist[i])+'\n')
+                        detective3_score.write(str(detective3_scorelist[i])+'\n')
                         i += 1
         if scoresub != 1 and returnmenu.press() == True:
             pagenumber = 0
