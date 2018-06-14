@@ -256,16 +256,16 @@ def setup():
             number_namelist.append(lines[i])
             number_scorelist.append(int(lines[i+1]))
             i += 2
-    with open ("detectivescore.txt") as detective_score:
+    with open ("detectivescore1.txt") as detective1_score:
         i = 0
-        global detective_namelist
-        detective_namelist = []
-        global detective_scorelist
-        detective_scorelist = []
-        lines = [x.replace('\n', '') for x in detective_score.readlines()]
+        global detective1_namelist
+        detective1_namelist = []
+        global detective1_scorelist
+        detective1_scorelist = []
+        lines = [x.replace('\n', '') for x in detective1_score.readlines()]
         while i != len(lines):
-            detective_namelist.append(lines[i])
-            detective_scorelist.append(int(lines[i+1]))
+            detective1_namelist.append(lines[i])
+            detective1_scorelist.append(int(lines[i+1]))
             i += 2
     
 def draw():
@@ -389,8 +389,8 @@ def draw():
                         i += 1
             if gamename == "Number Detective":
                 i = 0
-                while i < len(detective_namelist) and i < 5:
-                        scoreboard_text += "\n"+detective_namelist[i]+" - "+"Score: "+str(detective_scorelist[i])+"\n"
+                while i < len(detective1_namelist) and i < 5:
+                        scoreboard_text += "\n"+detective1_namelist[i]+" - "+"Score: "+str(detective1_scorelist[i])+"\n"
                         i += 1
             displaytext("Regular",255,24,scoreboard_text,350,70)
             strokeWeight(1)
@@ -548,24 +548,24 @@ def mouseClicked():
                         number_score.write(str(number_scorelist[i])+'\n')
                         i += 1
             if gamename == "Number Detective":
-                global detective_namelist
-                detective_namelist.append(str(namebox.getText()))
-                global detective_scorelist
-                detective_scorelist.append(int(gamescore))
-                sortedscore = sorted(detective_scorelist, reverse= False)
+                global detective1_namelist
+                detective1_namelist.append(str(namebox.getText()))
+                global detective1_scorelist
+                detective1_scorelist.append(int(gamescore))
+                sortedscore = sorted(detective1_scorelist, reverse= False)
                 new_namelist = []
                 for s in sortedscore:
-                    indx = detective_scorelist.index(s)
-                    detective_scorelist.pop(indx)
-                    new_namelist.append(detective_namelist[indx])
-                    detective_namelist.pop(indx)
-                detective_namelist = new_namelist
-                detective_scorelist = sortedscore
-                with open ("detectivescore.txt", "w") as detective_score:
+                    indx = detective1_scorelist.index(s)
+                    detective1_scorelist.pop(indx)
+                    new_namelist.append(detective1_namelist[indx])
+                    detective1_namelist.pop(indx)
+                detective1_namelist = new_namelist
+                detective1_scorelist = sortedscore
+                with open ("detectivescore1.txt", "w") as detective1_score:
                     i = 0
-                    while i < len(detective_namelist):
-                        detective_score.write(str(detective_namelist[i])+'\n')
-                        detective_score.write(str(detective_scorelist[i])+'\n')
+                    while i < len(detective1_namelist):
+                        detective1_score.write(str(detective1_namelist[i])+'\n')
+                        detective1_score.write(str(detective1_scorelist[i])+'\n')
                         i += 1
         if scoresub != 1 and returnmenu.press() == True:
             pagenumber = 0
