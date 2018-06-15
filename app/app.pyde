@@ -6,8 +6,10 @@ add_library('controlP5')
 # Page 4 = Chase the Number Game Page
 # Page 5 = Number Detective Game Page
 # Page 6 = Game 3 Game Page
-# Page 7 = Scoreboard Page
-import random
+# Page 7 = Scoreboard Page 
+
+#import variables and library
+import random 
 pagenumber = 0
 resetgame = 0 
 guesscounter = 0
@@ -15,7 +17,7 @@ digitinfo = ""
 t = 0
 difcheck = 0
 
-class Button():
+class Button(): #This creates buttons
     def __init__(self,xPos,yPos,buttonsize,buttontext):
         self.x = xPos
         self.y = yPos
@@ -33,7 +35,7 @@ class Button():
             self.buttonwidth = 600
             self.buttonlength = 60
             
-    def create(self):
+    def create(self): #Displays the button
         fill(255,0,180)
         rect(self.x,self.y,self.buttonwidth,self.buttonlength)
         displaytext("Extra Bold",255,self.textsize,self.buttontext,self.x+(self.buttonwidth/2),self.y+(self.buttonlength/2)+(self.buttonlength/8))
@@ -44,14 +46,14 @@ class Button():
             return False
 
 
-class NumberBubble():
+class NumberBubble(): #Creates all the number bubbles in chasing numbers game
 
     def __init__(self):
         self.gen_bubble()
         self.score = 0
-        self.game = 0
+        self.game = 0 #Keeps track if the game is still in progress (0=on and 1=off)
                 
-    def gen_bubble(self):
+    def gen_bubble(self): # Generates all positions of the bubbles and numbers
         self.posX = [random.randint(25,670)]
         self.posY = [random.randint(75,400)]
         self.lowhigh = random.randint(1,2) # To determine if user should select the lowest or highest number (1 = Lowest, 2 = Highest)
@@ -60,14 +62,14 @@ class NumberBubble():
             x = random.randint(25,670)
             y = random.randint(75,400)
             check = False
-            for l in self.posX:
+            for l in self.posX: #Checks to make sure bubbles don't overlap
                 for j in self.posY:
                     if x in range(l-51,l+51) and y in range(j-37,j+37):
                         check = True
                         break
                 if check == True:
                     break
-            if check == False:
+            if check == False: # This is so it does not overlap
                 self.posX.append(x)
                 self.posY.append(y)
                 p += 1
@@ -77,7 +79,7 @@ class NumberBubble():
         while n != 10: # Generate a list of 10 random int 
             num = random.randint(1,99)
             check = False
-            for t in self.number_list:
+            for t in self.number_list: # Makes sure number does not already exist
                 if num == t:
                     check = True
 
@@ -86,20 +88,20 @@ class NumberBubble():
                 n += 1
 
       
-    def display(self):
+    def display(self): # Creates the game screen
         self.game = 0
-        if self.lowhigh == 1:
+        if self.lowhigh == 1: # Displays lowest text
             displaytext("Extra Bold",255,35,"Select the LOWEST Number",350,50)
-        if self.lowhigh == 2:
+        if self.lowhigh == 2: # Displays Highest text
             displaytext("Extra Bold",255,35,"Select the HIGHEST Number",350,50)
         i = 0
-        while i < len(self.posX):
+        while i < len(self.posX): # Creates the bubbles
             fill(255)
             ellipse(self.posX[i],self.posY[i],50,36)
             displaytext("Bold",0,20,self.number_list[i],self.posX[i],self.posY[i]+8)
             i += 1
 
-        scoretext = "Score: "+str(self.score)
+        scoretext = "Score: "+str(self.score) # Displays current score
         if len(number_scorelist) == 0:
             highscore = 0
         else:
@@ -108,7 +110,7 @@ class NumberBubble():
         displaytext("Extra Bold",255,25,scoretext,100,450)
         displaytext("Extra Bold",255,25,highscoretext,100,485)
         
-    def gameover(self):
+    def gameover(self): # This is for when the games over and resets variables
         self.game = 1
         self.posX = []
         self.posY = []
@@ -120,13 +122,13 @@ class NumberBubble():
         savescore.create()
         return int(self.score)
             
-    def remove_bubble(self,index):
+    def remove_bubble(self,index): # Removes bubbles when clicked
         self.posX.remove(self.posX[index])
         self.posY.remove(self.posY[index])
         self.number_list.remove(self.number_list[index])
 
             
-    def press(self):
+    def press(self): # Function for when mouse is pressed
         OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
         if self.game == 0:
             i = 0
@@ -135,7 +137,7 @@ class NumberBubble():
             if self.lowhigh == 2:
                 numbertarget = max(self.number_list)
             while i < len(self.posX):
-                if len(self.posX) == 1:
+                if len(self.posX) == 1: # If bubble as last one on screen reenerates 10 new bubbles
                     fill(0,255,0)
                     textFont(OpenSansExtraBold,25)
                     textAlign(CENTER)
@@ -143,24 +145,24 @@ class NumberBubble():
                     self.gen_bubble()
                     self.score += 1
                     break
-                if mouseX in range(self.posX[i]-25,self.posX[i]+25):
+                if mouseX in range(self.posX[i]-25,self.posX[i]+25): # Checks if mouse click within a bubble
                     if mouseY in range(self.posY[i]-18,self.posY[i]+18):
-                        if numbertarget == self.number_list[i]:
+                        if numbertarget == self.number_list[i]: # Sees if correct bubble was correct
                             fill(0,255,0)
                             textFont(OpenSansExtraBold,25)
                             textAlign(CENTER)
                             text("+1",100,425)
                             self.remove_bubble(i)
                             self.score += 1
-                            self.lowhigh = random.randint(1,2)
-                        elif self.score != 0:
+                            self.lowhigh = random.randint(1,2) # Randomizese to see if its low or high
+                        elif self.score != 0: # minus a point from the score if pressed wrong one
                             fill(124,10,2)
                             textFont(OpenSansExtraBold,25)
                             textAlign(CENTER)
                             text("-1",100,425)
                             self.score -= 1    
                 i += 1
-        if self.game == 1:
+        if self.game == 1: # Keeps track of presses on game overpage
             if exitgame.press() == True:
                 global pagenumber
                 pagenumber = 0
@@ -168,31 +170,32 @@ class NumberBubble():
                 global pagenumber
                 pagenumber = 7
                 global scoresub
-                scoresub = 1
+                scoresub = 1 # Tells the scoreboard that it needs to be subimmited
                 global gamename
-                gamename = "Chase the Number"
+                gamename = "Chase the Number" # Tells the score board which game to save it in
                 
-class Timer():
+class Timer(): # Function that creates timer
     def __init__(self,sec):
         self.sec = sec
-        self.starttimer = millis()
+        self.starttimer = millis() # Looks at current time
         
-    def update(self):
+    def update(self): # Updates the timer
         timetext = "Time Left: "+str(self.sec)
-        displaytext("Extra Bold",255,35,timetext,550,475)
+        displaytext("Extra Bold",255,35,timetext,550,475) 
         
-        timedif = millis() - self.starttimer
+        timedif = millis() - self.starttimer # Calculates difference between current time and start time
         
-        if timedif >= 1000:
+        if timedif >= 1000: # Checks to see if time difference is more then one second
             self.sec -= 1
-            self.starttimer = millis()
+            self.starttimer = millis() # Resets start time
     
         
-    def timecheck(self):
+    def timecheck(self): # Checks if there is time on the clock
         if self.sec >= 0:
             return True
         else:
             return False
+# Creates button for each page
         
 ### HOME PAGE BUTTONS ###
 chasing = Button(50,150,'Extra Large','Chase The Numbers')
@@ -225,7 +228,7 @@ def startup(): # Create objects for class functions
     global chasetimer
     chasetimer = Timer(60)
     
-def displaytext(font,fontfill,fontsize,inputtext,posX,posY):
+def displaytext(font,fontfill,fontsize,inputtext,posX,posY): # The function to create text
     if font == "Extra Bold":
         OpenSansExtraBold = loadFont("OpenSans-Extrabold-48.vlw")
         textFont(OpenSansExtraBold,fontsize)
@@ -240,13 +243,13 @@ def displaytext(font,fontfill,fontsize,inputtext,posX,posY):
     text(inputtext,posX,posY)
     
     
-def setup():
+def setup(): 
     size(700,500)
     background(91,94,125)
     startup()
     
     ### DOWNLOAD SCORES##
-    with open ("numberscore.txt") as number_score:
+    with open ("numberscore.txt") as number_score: # Chasing Numbe Scores
         i = 0
         global number_namelist
         number_namelist = []
@@ -257,7 +260,7 @@ def setup():
             number_namelist.append(lines[i])
             number_scorelist.append(int(lines[i+1]))
             i += 2
-    with open ("detectivescore1.txt") as detective1_score:
+    with open ("detectivescore1.txt") as detective1_score: # 3 degit scores
         i = 0
         global detective1_namelist
         detective1_namelist = []
@@ -268,7 +271,7 @@ def setup():
             detective1_namelist.append(lines[i])
             detective1_scorelist.append(int(lines[i+1]))
             i += 2
-    with open ("detectivescore2.txt") as detective2_score:
+    with open ("detectivescore2.txt") as detective2_score: # 4 degit scores
         i = 0
         global detective2_namelist
         detective2_namelist = []
@@ -279,7 +282,7 @@ def setup():
             detective2_namelist.append(lines[i])
             detective2_scorelist.append(int(lines[i+1]))
             i += 2
-    with open ("detectivescore3.txt") as detective3_score:
+    with open ("detectivescore3.txt") as detective3_score: # 5 digit scores
         i = 0
         global detective3_namelist
         detective3_namelist = []
@@ -344,7 +347,7 @@ def draw():
         
     if pagenumber == 4: # Chase the Number Game Screen
         
-        if chasetimer.timecheck() == True:
+        if chasetimer.timecheck() == True: # Checks to see if there is still time 
             gamebubble.display()
             chasetimer.update()
             
@@ -366,7 +369,7 @@ def draw():
                 leng = 5
             displaytext("Extra Bold",255,25,"Enter your guess:",175,255)
             guessbox.show()
-            if len(guessbox.getText()) > leng:
+            if len(guessbox.getText()) > leng: # Restricts entries to the digits needed
                 inputtext = str(guessbox.getText())
                 guessbox.setText(inputtext[:leng])
             submit_guess.create()
@@ -375,7 +378,7 @@ def draw():
             #displaytext("Extra Bold",255,25,highscoretext,100,485)
             displaytext("Extra Bold",255,25,digitinfo,525,375)
         
-        if digitguess == 1:
+        if digitguess == 1: # Sees if the number is correctly gueesed
             displaytext("Extra Bold",255,50,"You Cracked the Code!",350,250)
             exitgame.create()
             savescore.create()
@@ -548,7 +551,6 @@ def mouseClicked():
             global digitinfo
             digitinfo = "Guess: "+str(guessbox.getText())+"\nWrong!\n"+loworhigh+"\n"+correcttext
             guessbox.setText("")
-            print(digit)
             
         elif digitguess == 1:
             if exitgame.press() == True:
